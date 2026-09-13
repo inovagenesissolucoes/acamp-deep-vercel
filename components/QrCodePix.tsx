@@ -95,7 +95,7 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     if (!canvas) return
     try {
       await QRCode.toCanvas(canvas, text, {
-        width: 200,
+        width: 260,
         margin: 1,
         color: { dark: '#1A1A2E', light: '#FFFFFF' },
       })
@@ -122,9 +122,9 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
         <div className="qr-inner">
           <canvas
             ref={canvasRef}
-            width={200}
-            height={200}
-            style={{ display: 'block', borderRadius: 8 }}
+            width={260}
+            height={260}
+            style={{ display: 'block' }}
           />
         </div>
       </div>
