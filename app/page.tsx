@@ -43,9 +43,9 @@ export default function HomePage() {
             width: 80, height: 80, borderRadius: '50%',
             background: 'white', boxShadow: '0 6px 30px rgba(0,0,0,0.2)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'fade-up 0.6s ease both',
+            animation: 'fade-up 0.6s ease both', overflow: 'hidden',
           }}>
-            <img src="/logo-deep.png" alt="Acamp Deep" width={62} height={62} style={{ objectFit: 'contain' }} />
+            <img src="/logo-deep.png" alt="Acamp Deep" width={80} height={80} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </div>
 

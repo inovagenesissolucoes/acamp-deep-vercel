@@ -44,7 +44,7 @@ export default function Splash({ onDone }: { onDone: () => void }) {
           overflow: 'hidden',
         }}
       >
-        <img src="/logo-deep.png" alt="Acamp Deep" width={80} height={80} style={{ objectFit: 'contain' }} />
+        <img src="/logo-deep.png" alt="Acamp Deep" width={110} height={110} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
 
       <p style={{

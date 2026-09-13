@@ -69,10 +69,10 @@ function LoginPageContent() {
           width: 100, height: 100, borderRadius: '50%',
           background: 'white', boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 1, position: 'relative',
+          zIndex: 1, position: 'relative', overflow: 'hidden',
           animation: mounted ? 'logo-in 0.7s cubic-bezier(0.34,1.56,0.64,1) both' : 'none',
         }}>
-          <img src="/logo-deep.png" alt="Acamp Deep" width={76} height={76} style={{ objectFit: 'contain' }} />
+          <img src="/logo-deep.png" alt="Acamp Deep" width={100} height={100} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       </div>
 
