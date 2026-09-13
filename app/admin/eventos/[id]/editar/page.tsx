@@ -16,7 +16,17 @@ export default function EditarEventoPage() {
   useEffect(() => {
     const u = getUsuarioLocal()
     if (!u || !isLider(u)) { router.replace('/menu'); return }
-    getEvento(id).then(r => { if (r.ok && r.data) setForm(r.data); setCarregando(false) })
+    getEvento(id).then(r => {
+      if (r.ok && r.data) {
+        const ev: any = { ...r.data }
+        // Normaliza datas para AAAA-MM-DD (o backend pode retornar ISO completo)
+        ;['dataInicio', 'dataFim', 'dataLimite'].forEach(campo => {
+          if (ev[campo]) ev[campo] = String(ev[campo]).slice(0, 10)
+        })
+        setForm(ev)
+      }
+      setCarregando(false)
+    })
   }, [id, router])
 
   const set = (campo: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>

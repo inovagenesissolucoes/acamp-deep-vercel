@@ -48,8 +48,9 @@ export default function ListaEventosPage() {
 
   const fmtData = (d: string) => {
     if (!d) return '—'
-    const [ano, mes, dia] = d.split('-')
-    return dia && mes && ano ? `${dia}/${mes}/${ano}` : d
+    const data = new Date(d)
+    if (isNaN(data.getTime())) return d
+    return data.toLocaleDateString('pt-BR', { timeZone: 'UTC' })
   }
 
   return (
