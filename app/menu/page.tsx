@@ -88,29 +88,29 @@ export default function MenuPage() {
 
         {/* Barra topo */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
-          <div>
-            <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
-              Seja Bem-Vindo
-            </p>
-            <p style={{
-              fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
-              margin: 0, letterSpacing: '-0.02em',
-              background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            }}>
-              {usuario?.nome || 'Usuário'} ✨
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             {lider && (
-              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Menu size={18} />
               </button>
             )}
-            <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LogOut size={18} />
-            </button>
+            <div>
+              <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
+                Seja Bem-Vindo
+              </p>
+              <p style={{
+                fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
+                margin: 0, letterSpacing: '-0.02em',
+                background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              }}>
+                {usuario?.nome || 'Usuário'} ✨
+              </p>
+            </div>
           </div>
+          <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <LogOut size={18} />
+          </button>
         </div>
 
         {/* 4 ícones */}
@@ -198,33 +198,87 @@ export default function MenuPage() {
             }}
           />
           <div style={{
-            position: 'fixed', top: 0, right: 0, bottom: 0, width: '78%', maxWidth: 300,
-            background: 'white', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: '82%', maxWidth: 320,
+            background: '#F7F8FC', zIndex: 201, boxShadow: '-8px 0 32px rgba(0,0,0,0.18)',
             transform: menuAberto ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1)',
             display: 'flex', flexDirection: 'column',
-            paddingTop: 'env(safe-area-inset-top, 0px)',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '1px solid #EEE' }}>
-              <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'var(--text-main)' }}>Área do Líder</span>
-              <button onClick={() => setMenuAberto(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
-                <X size={22} />
+            {/* Cabeçalho com dados do usuário */}
+            <div style={{
+              background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
+              padding: `calc(env(safe-area-inset-top, 0px) + 24px) 20px 24px`,
+              position: 'relative', overflow: 'hidden', flexShrink: 0,
+            }}>
+              <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -50, right: -40, pointerEvents: 'none' }} />
+              <button
+                onClick={() => setMenuAberto(false)}
+                style={{
+                  position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 16px)', right: 16,
+                  width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.2)',
+                  border: 'none', cursor: 'pointer', color: 'white',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <X size={18} />
               </button>
+
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.22)', border: '2px solid rgba(255,255,255,0.5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 12, position: 'relative', zIndex: 1,
+              }}>
+                <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 20, color: 'white' }}>
+                  {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
+                </span>
+              </div>
+
+              <p style={{
+                fontFamily: 'Poppins', fontWeight: 700, fontSize: 17, color: 'white',
+                margin: '0 0 3px', position: 'relative', zIndex: 1,
+              }}>
+                {usuario?.nome} {usuario?.sobrenome}
+              </p>
+              <p style={{
+                fontFamily: 'Poppins', fontSize: 12.5, color: 'rgba(255,255,255,0.8)',
+                margin: 0, position: 'relative', zIndex: 1,
+              }}>
+                {usuario?.email}
+              </p>
+              <span style={{
+                display: 'inline-block', marginTop: 10, padding: '3px 10px', borderRadius: 999,
+                background: 'rgba(255,255,255,0.2)', fontFamily: 'Poppins', fontSize: 11, fontWeight: 600,
+                color: 'white', letterSpacing: 0.3, position: 'relative', zIndex: 1,
+              }}>
+                LÍDER
+              </span>
             </div>
-            <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+
+            {/* Itens do menu */}
+            <div style={{ padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontFamily: 'Poppins', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.4, padding: '0 10px 6px' }}>
+                ÁREA DO LÍDER
+              </span>
               {itensLider.map(item => (
                 <button
                   key={item.href}
                   onClick={() => irPara(item.href)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 12,
-                    padding: '13px 12px', borderRadius: 12, border: 'none',
-                    background: 'none', cursor: 'pointer', textAlign: 'left',
-                    fontFamily: 'Poppins', fontSize: 14, fontWeight: 500,
-                    color: 'var(--text-main)',
+                    padding: '12px', borderRadius: 14, border: 'none',
+                    background: 'white', cursor: 'pointer', textAlign: 'left',
+                    fontFamily: 'Poppins', fontSize: 14, fontWeight: 600,
+                    color: 'var(--text-main)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                   }}
                 >
-                  <span style={{ color: '#5B6FE8', display: 'flex' }}>{item.icon}</span>
+                  <span style={{
+                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                    background: 'linear-gradient(135deg, #5B6FE8, #9BB0FF)',
+                    color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {item.icon}
+                  </span>
                   {item.label}
                 </button>
               ))}
