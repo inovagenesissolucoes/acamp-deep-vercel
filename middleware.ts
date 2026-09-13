@@ -17,6 +17,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/manifest') ||
     pathname === '/sw.js' ||
     pathname === '/sw-custom.js' ||
+    /\.(png|jpg|jpeg|svg|gif|webp|ico|json|js|css|woff2?|ttf)$/.test(pathname) ||
     PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
   ) {
     return NextResponse.next()
