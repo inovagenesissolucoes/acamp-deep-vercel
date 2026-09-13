@@ -32,6 +32,7 @@ export default function NovoEventoPage() {
     nome: '', dataInicio: '', dataFim: '', horario: '',
     dataLimite: '', valor: '', status: 'aberto',
     recomendacoes: '', chavePix: '', idadeAutorizacao: '14',
+    senhaExcecao: '',
   })
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
@@ -65,6 +66,7 @@ export default function NovoEventoPage() {
       recomendacoes: form.recomendacoes.trim(),
       chavePix: form.chavePix.trim(),
       idadeAutorizacao: parseInt(form.idadeAutorizacao) || 14,
+      senhaExcecao: form.senhaExcecao.trim(),
     })
     setLoading(false)
 
@@ -130,9 +132,16 @@ export default function NovoEventoPage() {
             <label className="input-label">Idade mínima para autorização de responsável</label>
             <input className="input-field" type="number" placeholder="Ex.: 14" value={form.idadeAutorizacao} onChange={set('idadeAutorizacao')} />
           </div>
-          <div className="input-group" style={{ marginBottom: 0 }}>
+          <div className="input-group">
             <label className="input-label">Recomendações</label>
             <textarea className="input-field" placeholder="Ex.: Levar toalha, kit de higiene pessoal..." value={form.recomendacoes} onChange={set('recomendacoes')} rows={3} style={{ resize: 'none', lineHeight: 1.5 }} />
+          </div>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Senha de exceção (opcional)</label>
+            <input className="input-field" type="text" placeholder="Libera inscrição após o prazo" value={form.senhaExcecao} onChange={set('senhaExcecao')} />
+            <p style={{ fontFamily: 'Poppins', fontSize: 11.5, color: 'var(--text-muted)', margin: '6px 0 0' }}>
+              Se definida, quem souber essa senha pode se inscrever mesmo após a data limite.
+            </p>
           </div>
         </div>
 

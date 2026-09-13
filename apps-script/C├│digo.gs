@@ -87,8 +87,8 @@ function doPost(e) {
 
       // EVENTOS
       case 'listarEventos': resultado = acaoListarEventos(); break;
-      case 'getEventoAtivo': resultado = acaoGetEventoAtivo(); break;
-      case 'getEvento': resultado = acaoGetEvento(body); break;
+      case 'getEventoAtivo': resultado = acaoGetEventoAtivo(usuarioId); break;
+      case 'getEvento': resultado = acaoGetEvento(body, usuarioId); break;
       case 'criarEvento': resultado = acaoCriarEvento(body, usuarioId); break;
       case 'editarEvento': resultado = acaoEditarEvento(body, usuarioId); break;
       case 'setEventoAtivo': resultado = acaoSetEventoAtivo(body, usuarioId); break;
@@ -274,19 +274,26 @@ function acaoListarEventos() {
   return { ok: true, data: eventos };
 }
 
-function acaoGetEventoAtivo() {
+function acaoGetEventoAtivo(usuarioId) {
   const ativos = getSheet('eventoAtivo').getDataRange().getValues();
   if (ativos.length < 2) return { ok: false, erro: 'Nenhum evento ativo.' };
   const eventoId = ativos[1][0];
-  return acaoGetEvento({ id: eventoId });
+  return acaoGetEvento({ id: eventoId }, usuarioId);
 }
 
-function acaoGetEvento(body) {
-  const { id } = body;
+function buscarEventoBruto(id) {
   const eventos = sheetToObjects(getSheet('eventos'));
-  const evento = eventos.find(e => e.id === id);
+  return eventos.find(e => e.id === id) || null;
+}
+
+function acaoGetEvento(body, usuarioId) {
+  const { id } = body;
+  const evento = buscarEventoBruto(id);
   if (!evento) return { ok: false, erro: 'Evento não encontrado.' };
-  return { ok: true, data: { ...evento, valor: parseFloat(evento.valor) || 0 } };
+  const { senhaExcecao, ...eventoPublico } = evento;
+  const dados = { ...eventoPublico, valor: parseFloat(evento.valor) || 0, temExcecaoPrazo: !!(senhaExcecao && senhaExcecao.toString().trim()) };
+  if (verificarLider(usuarioId)) dados.senhaExcecao = senhaExcecao || '';
+  return { ok: true, data: dados };
 }
 
 function verificarLider(usuarioId) {
@@ -298,12 +305,12 @@ function verificarLider(usuarioId) {
 
 function acaoCriarEvento(body, usuarioId) {
   if (!verificarLider(usuarioId)) return { ok: false, erro: 'Acesso negado.' };
-  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao } = body;
+  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao, senhaExcecao } = body;
   if (!nome || !dataInicio || !dataFim || !dataLimite || !valor) return { ok: false, erro: 'Dados incompletos.' };
 
   const id = gerarId();
   const agora = new Date().toISOString();
-  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora]);
+  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora, senhaExcecao || '']);
   return { ok: true, data: { id } };
 }
 
@@ -339,8 +346,32 @@ function acaoSetEventoAtivo(body, usuarioId) {
 // AÇÕES — INSCRIÇÕES
 // ============================================================
 
-function distribuirVencimentos(dataLimite, quantidade) {
+function distribuirVencimentos(dataLimite, quantidade, diaVencimento) {
   const limite = new Date(dataLimite);
+
+  if (diaVencimento) {
+    // Gera vencimentos no dia fixo escolhido (ex: todo dia 10), mês a mês,
+    // nunca ultrapassando a data limite do evento.
+    const hoje = new Date();
+    let ano = hoje.getFullYear();
+    let mes = hoje.getMonth();
+    let candidato = new Date(ano, mes, diaVencimento);
+    if (candidato <= hoje) {
+      mes += 1;
+      candidato = new Date(ano, mes, diaVencimento);
+    }
+    const datas = [];
+    while (candidato <= limite && datas.length < quantidade) {
+      datas.push(candidato.toISOString().split('T')[0]);
+      mes += 1;
+      candidato = new Date(ano, mes, diaVencimento);
+    }
+    // Se não deu pra gerar todas as parcelas pedidas, preenche o resto na data limite
+    while (datas.length < quantidade) datas.push(limite.toISOString().split('T')[0]);
+    return datas;
+  }
+
+  // Fallback: distribuição igual entre hoje e a data limite (comportamento antigo)
   const inicio = new Date();
   const intervalo = (limite.getTime() - inicio.getTime()) / quantidade;
   return Array.from({ length: quantidade }, (_, i) => {
@@ -351,7 +382,7 @@ function distribuirVencimentos(dataLimite, quantidade) {
 
 function acaoInscrever(body, usuarioId) {
   if (!usuarioId) return { ok: false, erro: 'Não autenticado.' };
-  const { eventoId, quantidadeParcelas, whatsappResponsavel } = body;
+  const { eventoId, quantidadeParcelas, whatsappResponsavel, diaVencimento, senhaExcecao } = body;
   if (!eventoId || !quantidadeParcelas) return { ok: false, erro: 'Dados incompletos.' };
 
   // Verificar se já inscrito
@@ -359,10 +390,18 @@ function acaoInscrever(body, usuarioId) {
   const jaInscrito = inscricoes.find(i => i.eventoId === eventoId && i.usuarioId === usuarioId);
   if (jaInscrito) return { ok: false, erro: 'Você já está inscrito neste evento.' };
 
-  const eventoRes = acaoGetEvento({ id: eventoId });
-  if (!eventoRes.ok) return eventoRes;
-  const evento = eventoRes.data;
+  const evento = buscarEventoBruto(eventoId);
+  if (!evento) return { ok: false, erro: 'Evento não encontrado.' };
   if (evento.status !== 'aberto') return { ok: false, erro: 'As inscrições para este evento estão fechadas.' };
+
+  // Prazo de inscrição (mesma data limite de pagamento)
+  const prazoEncerrado = new Date() > new Date(evento.dataLimite + 'T23:59:59');
+  if (prazoEncerrado) {
+    const senhaCadastrada = (evento.senhaExcecao || '').toString().trim();
+    if (!senhaCadastrada || (senhaExcecao || '').toString().trim() !== senhaCadastrada) {
+      return { ok: false, erro: 'O prazo de inscrição para este evento já encerrou.' };
+    }
+  }
 
   const inscricaoId = gerarId();
   const agora = new Date().toISOString();
@@ -370,7 +409,7 @@ function acaoInscrever(body, usuarioId) {
 
   // Gerar parcelas
   const valorParcela = parseFloat(evento.valor) / quantidadeParcelas;
-  const vencimentos = distribuirVencimentos(evento.dataLimite, quantidadeParcelas);
+  const vencimentos = distribuirVencimentos(evento.dataLimite, quantidadeParcelas, diaVencimento ? parseInt(diaVencimento) : null);
   const sheetParcelas = getSheet('parcelas');
 
   for (let i = 0; i < quantidadeParcelas; i++) {
@@ -643,7 +682,7 @@ function setupPlanilha() {
   const abas = {
     'usuarios': ['id', 'nome', 'sobrenome', 'email', 'telefone', 'dataNascimento', 'membroDeep', 'membroIgreja', 'acesso', 'senha', 'createdAt'],
     'sessoes': ['token', 'usuarioId', 'createdAt', 'expiresAt'],
-    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt'],
+    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt', 'senhaExcecao'],
     'eventoAtivo': ['eventoId'],
     'inscricoes': ['id', 'eventoId', 'usuarioId', 'whatsappResponsavel', 'createdAt'],
     'parcelas': ['id', 'inscricaoId', 'numero', 'totalParcelas', 'valor', 'vencimento', 'status', 'comprovanteUrl', 'pagoEm'],

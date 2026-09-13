@@ -60,6 +60,7 @@ export const setEventoAtivo = (eventoId: string) => rpc('setEventoAtivo', { even
 // ---- INSCRIÇÕES ----
 export const inscrever = (dados: {
   eventoId: string; quantidadeParcelas: number; whatsappResponsavel?: string
+  diaVencimento?: number; senhaExcecao?: string
 }) => rpc('inscrever', dados)
 
 export const listarInscricoes = (eventoId: string) =>

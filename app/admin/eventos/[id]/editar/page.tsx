@@ -54,6 +54,7 @@ export default function EditarEventoPage() {
             { label: 'Data Limite', campo: 'dataLimite', type: 'date' },
             { label: 'Valor (R$)', campo: 'valor', type: 'number' },
             { label: 'Chave PIX', campo: 'chavePix', type: 'text' },
+            { label: 'Senha de Exceção (opcional)', campo: 'senhaExcecao', type: 'text', placeholder: 'Libera inscrição após o prazo' },
           ].map(({ label, campo, type, placeholder }) => (
             <div key={campo} className="input-group">
               <label className="input-label">{label}</label>

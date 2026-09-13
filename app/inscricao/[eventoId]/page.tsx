@@ -1,11 +1,32 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
 import { getEvento, inscrever } from '@/lib/api'
 import { getUsuarioLocal, calcularIdade } from '@/lib/auth'
-import { Minus, Plus, Calendar, DollarSign } from 'lucide-react'
+import { Minus, Plus, Calendar, DollarSign, Clock, Info, Lock } from 'lucide-react'
 import type { Evento } from '@/components/EventoCard'
+
+const DIAS_DISPONIVEIS = [5, 10, 15, 20, 25]
+
+function gerarVencimentosPorDia(diaVencimento: number, dataLimite: string, maxParcelas: number): Date[] {
+  const limite = new Date(dataLimite + 'T23:59:59')
+  const hoje = new Date()
+  let ano = hoje.getFullYear()
+  let mes = hoje.getMonth()
+  let candidato = new Date(ano, mes, diaVencimento)
+  if (candidato <= hoje) {
+    mes += 1
+    candidato = new Date(ano, mes, diaVencimento)
+  }
+  const datas: Date[] = []
+  while (candidato <= limite && datas.length < maxParcelas) {
+    datas.push(new Date(candidato))
+    mes += 1
+    candidato = new Date(ano, mes, diaVencimento)
+  }
+  return datas
+}
 
 export default function InscricaoPage() {
   const router = useRouter()
@@ -14,7 +35,9 @@ export default function InscricaoPage() {
 
   const [evento, setEvento] = useState<Evento | null>(null)
   const [parcelas, setParcelas] = useState(1)
+  const [diaVencimento, setDiaVencimento] = useState(DIAS_DISPONIVEIS[0])
   const [whatsappResponsavel, setWhatsappResponsavel] = useState('')
+  const [senhaExcecao, setSenhaExcecao] = useState('')
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
   const [loadingEvento, setLoadingEvento] = useState(true)
@@ -32,26 +55,37 @@ export default function InscricaoPage() {
     })
   }, [eventoId])
 
+  const prazoEncerrado = useMemo(() => {
+    if (!evento) return false
+    return new Date() > new Date(evento.dataLimite + 'T23:59:59')
+  }, [evento])
+
+  const vencimentosMaximos = useMemo(() => {
+    if (!evento) return []
+    return gerarVencimentosPorDia(diaVencimento, evento.dataLimite, 24)
+  }, [evento, diaVencimento])
+
+  const maxParcelasPossivel = Math.max(1, vencimentosMaximos.length)
+
+  // Garante que a quantidade escolhida nunca ultrapasse o que cabe até a data limite
+  useEffect(() => {
+    if (parcelas > maxParcelasPossivel) setParcelas(maxParcelasPossivel)
+  }, [maxParcelasPossivel, parcelas])
+
   const valorParcela = evento ? (evento.valor / parcelas) : 0
+  const vencimentosExibidos = vencimentosMaximos.slice(0, parcelas)
 
   function formatarData(iso: string) {
-    return new Date(iso).toLocaleDateString('pt-BR')
-  }
-
-  function calcularVencimentos() {
-    if (!evento) return []
-    const inicio = new Date()
-    const fim = new Date(evento.dataLimite)
-    const intervalo = (fim.getTime() - inicio.getTime()) / parcelas
-    return Array.from({ length: parcelas }, (_, i) => {
-      const d = new Date(inicio.getTime() + intervalo * (i + 1))
-      return d.toLocaleDateString('pt-BR')
-    })
+    return new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'UTC' })
   }
 
   const handleInscrever = async () => {
     if (precisaResponsavel && !whatsappResponsavel) {
       setErro('Informe o WhatsApp do responsável (obrigatório para menores).')
+      return
+    }
+    if (prazoEncerrado && !senhaExcecao) {
+      setErro('O prazo de inscrição encerrou. Informe a senha de exceção para continuar.')
       return
     }
     setErro('')
@@ -61,7 +95,9 @@ export default function InscricaoPage() {
     const res = await inscrever({
       eventoId,
       quantidadeParcelas: parcelas,
+      diaVencimento,
       ...(precisaResponsavel ? { whatsappResponsavel } : {}),
+      ...(prazoEncerrado ? { senhaExcecao } : {}),
     })
     setLoading(false)
 
@@ -96,12 +132,12 @@ export default function InscricaoPage() {
           <div className="skeleton" style={{ height: 120, marginBottom: 16 }} />
         ) : evento ? (
           <>
-            {/* Card do evento */}
+            {/* Card do evento — informações completas */}
             <div className="card-solid" style={{ marginBottom: 16 }}>
-              <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 18, color: 'var(--text-main)', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 18, color: 'var(--text-main)', margin: '0 0 12px', letterSpacing: '-0.02em' }}>
                 {evento.nome}
               </h2>
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <DollarSign size={14} color="var(--primary)" />
                   <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-main)', fontWeight: 600 }}>
@@ -111,28 +147,94 @@ export default function InscricaoPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Calendar size={14} color="var(--primary)" />
                   <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>
-                    Limite: {formatarData(evento.dataLimite)}
+                    {formatarData(evento.dataInicio)} — {formatarData(evento.dataFim)}
+                  </span>
+                </div>
+                {evento.horario && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Clock size={14} color="var(--primary)" />
+                    <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>
+                      {evento.horario}
+                    </span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Calendar size={14} color={prazoEncerrado ? '#DC2626' : 'var(--primary)'} />
+                  <span style={{ fontFamily: 'Poppins', fontSize: 13, color: prazoEncerrado ? '#DC2626' : 'var(--text-muted)', fontWeight: prazoEncerrado ? 600 : 400 }}>
+                    Limite de inscrição: {formatarData(evento.dataLimite)}{prazoEncerrado ? ' (encerrado)' : ''}
                   </span>
                 </div>
               </div>
+
+              {evento.recomendacoes && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 14, padding: 12, background: 'rgba(91,111,232,0.06)', borderRadius: 10 }}>
+                  <Info size={15} color="var(--primary)" style={{ flexShrink: 0, marginTop: 1 }} />
+                  <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
+                    {evento.recomendacoes}
+                  </p>
+                </div>
+              )}
             </div>
+
+            {/* Bloqueio de prazo */}
+            {prazoEncerrado && (
+              <div className="card-solid" style={{ marginBottom: 16, borderLeft: '3px solid #DC2626' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <Lock size={16} color="#DC2626" />
+                  <p style={{ fontFamily: 'Poppins', fontSize: 13.5, fontWeight: 700, color: '#DC2626', margin: 0 }}>
+                    Prazo de inscrição encerrado
+                  </p>
+                </div>
+                <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: '0 0 12px' }}>
+                  Se o seu líder liberou uma exceção, informe a senha abaixo para continuar.
+                </p>
+                <div className="input-group" style={{ marginBottom: 0 }}>
+                  <label className="input-label">Senha de exceção</label>
+                  <input className="input-field" type="text" placeholder="Peça ao seu líder" value={senhaExcecao} onChange={e => setSenhaExcecao(e.target.value)} />
+                </div>
+              </div>
+            )}
 
             {/* Parcelas */}
             <div className="card-solid" style={{ marginBottom: 16 }}>
+              <label className="input-label" style={{ marginBottom: 10 }}>
+                Dia de vencimento
+              </label>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' }}>
+                {DIAS_DISPONIVEIS.map(dia => (
+                  <button
+                    key={dia}
+                    onClick={() => setDiaVencimento(dia)}
+                    style={{
+                      flex: 1, minWidth: 56, padding: '9px 0', borderRadius: 10,
+                      border: dia === diaVencimento ? '2px solid var(--primary)' : '1px solid #E5E7EB',
+                      background: dia === diaVencimento ? 'rgba(91,111,232,0.08)' : 'white',
+                      color: dia === diaVencimento ? 'var(--primary)' : 'var(--text-muted)',
+                      fontFamily: 'Poppins', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                    }}
+                  >
+                    Dia {dia}
+                  </button>
+                ))}
+              </div>
+
               <label className="input-label" style={{ marginBottom: 12 }}>
                 Quantidade de Parcelas
               </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center', marginBottom: 8 }}>
                 <button className="counter-btn" onClick={() => setParcelas(Math.max(1, parcelas - 1))}>
                   <Minus size={16} />
                 </button>
                 <span style={{ fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, color: 'var(--primary)', minWidth: 40, textAlign: 'center' }}>
                   {parcelas}
                 </span>
-                <button className="counter-btn" onClick={() => setParcelas(parcelas + 1)}>
+                <button className="counter-btn" onClick={() => setParcelas(Math.min(maxParcelasPossivel, parcelas + 1))}>
                   <Plus size={16} />
                 </button>
               </div>
+              <p style={{ fontFamily: 'Poppins', fontSize: 11.5, color: 'var(--text-muted)', textAlign: 'center', margin: '0 0 16px' }}>
+                Máximo de {maxParcelasPossivel}x até a data limite, vencendo todo dia {diaVencimento}
+              </p>
 
               <div style={{ background: 'rgba(91,111,232,0.06)', borderRadius: 10, padding: 14 }}>
                 <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)', margin: '0 0 4px' }}>
@@ -153,10 +255,10 @@ export default function InscricaoPage() {
                 <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--text-main)', margin: '0 0 12px' }}>
                   Datas de Vencimento
                 </p>
-                {calcularVencimentos().map((d, i) => (
+                {vencimentosExibidos.map((d, i) => (
                   <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '7px 0', borderBottom: i < parcelas - 1 ? '1px solid #F0F0F0' : 'none' }}>
                     <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>Parcela {i + 1}</span>
-                    <span style={{ fontFamily: 'Poppins', fontSize: 13, fontWeight: 600, color: 'var(--text-main)' }}>{d}</span>
+                    <span style={{ fontFamily: 'Poppins', fontSize: 13, fontWeight: 600, color: 'var(--text-main)' }}>{d.toLocaleDateString('pt-BR')}</span>
                   </div>
                 ))}
               </div>
