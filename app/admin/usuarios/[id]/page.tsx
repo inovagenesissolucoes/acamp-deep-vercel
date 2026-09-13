@@ -36,7 +36,7 @@ export default function DetalheUsuarioPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Detalhe do Cadastro" voltarUrl="/admin/cadastrados"
+      <HeaderInterno titulo="Detalhe do Cadastro"
         direita={!editando ? <button onClick={() => setEditando(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white' }}><Edit2 size={20} /></button> : undefined} />
       <div style={{ flex: 1, padding: '20px 20px', paddingBottom: 32 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>

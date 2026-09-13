@@ -71,7 +71,6 @@ export default function MeuCadastroPage() {
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
       <HeaderInterno
         titulo="Meu Cadastro"
-        voltarUrl="/menu"
         direita={
           !editando ? (
             <button onClick={() => setEditando(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white' }}>

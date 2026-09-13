@@ -38,7 +38,7 @@ export default function InscricoesPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Inscrições" voltarUrl="/menu" />
+      <HeaderInterno titulo="Inscrições" />
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px', paddingBottom: 24 }}>
         {eventoNome && (
           <p style={{ fontFamily: 'Poppins', fontSize: 12, color: 'var(--text-muted)', margin: '0 0 14px' }}>

@@ -55,7 +55,7 @@ export default function ListaEventosPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Eventos" voltarUrl="/menu" />
+      <HeaderInterno titulo="Eventos" />
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px', paddingBottom: 32 }}>
 
         <button

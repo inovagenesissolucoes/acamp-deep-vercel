@@ -79,7 +79,7 @@ export default function CadastroPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Cadastro" voltarUrl="/login" />
+      <HeaderInterno titulo="Cadastro" />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px', paddingBottom: 32 }}>
         {erro && (

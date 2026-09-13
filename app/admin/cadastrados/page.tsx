@@ -29,7 +29,7 @@ export default function CadastradosPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Cadastrados" voltarUrl="/menu" />
+      <HeaderInterno titulo="Cadastrados" />
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px', paddingBottom: 24 }}>
         <div className="search-wrapper" style={{ marginBottom: 14 }}>
           <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>

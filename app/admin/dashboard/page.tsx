@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Dashboard" voltarUrl="/menu" />
+      <HeaderInterno titulo="Dashboard" />
 
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 32 }}>
         {loading ? (
