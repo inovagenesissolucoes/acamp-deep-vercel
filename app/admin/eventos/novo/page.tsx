@@ -1,0 +1,136 @@
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import HeaderInterno from '@/components/HeaderInterno'
+import { criarEvento } from '@/lib/api'
+import { getUsuarioLocal, isLider } from '@/lib/auth'
+import { useEffect } from 'react'
+
+export default function NovoEventoPage() {
+  const router = useRouter()
+  const [form, setForm] = useState({
+    nome: '', dataInicio: '', dataFim: '', horario: '',
+    dataLimite: '', valor: '', status: 'aberto',
+    recomendacoes: '', chavePix: '', idadeAutorizacao: '14',
+  })
+  const [loading, setLoading] = useState(false)
+  const [erro, setErro] = useState('')
+  const [sucesso, setSucesso] = useState(false)
+
+  useEffect(() => {
+    const u = getUsuarioLocal()
+    if (!u || !isLider(u)) router.replace('/menu')
+  }, [router])
+
+  const set = (campo: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+    setForm(f => ({ ...f, [campo]: e.target.value }))
+
+  const handleSalvar = async () => {
+    if (!form.nome || !form.dataInicio || !form.dataFim || !form.dataLimite || !form.valor || !form.chavePix) {
+      setErro('Preencha todos os campos obrigatórios.')
+      return
+    }
+    setErro('')
+    setLoading(true)
+    if (navigator.vibrate) navigator.vibrate(10)
+
+    const res = await criarEvento({
+      nome: form.nome.trim(),
+      dataInicio: form.dataInicio,
+      dataFim: form.dataFim,
+      horario: form.horario.trim(),
+      dataLimite: form.dataLimite,
+      valor: parseFloat(form.valor.replace(',', '.')),
+      status: form.status,
+      recomendacoes: form.recomendacoes.trim(),
+      chavePix: form.chavePix.trim(),
+      idadeAutorizacao: parseInt(form.idadeAutorizacao) || 14,
+    })
+    setLoading(false)
+
+    if (res.ok) {
+      setSucesso(true)
+      setTimeout(() => router.push('/admin/dashboard'), 2000)
+    } else {
+      setErro(res.erro || 'Erro ao criar evento.')
+    }
+  }
+
+  if (sucesso) {
+    return (
+      <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ fontSize: 60, marginBottom: 16 }}>🏕️</div>
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 20, color: 'var(--text-main)', margin: '0 0 8px', textAlign: 'center' }}>Evento criado!</h2>
+        <p style={{ fontFamily: 'Poppins', fontSize: 14, color: 'var(--text-muted)', textAlign: 'center' }}>Redirecionando para o dashboard...</p>
+      </main>
+    )
+  }
+
+  const Campo = ({ label, campo, type = 'text', placeholder = '', as = 'input' }: any) => (
+    <div className="input-group">
+      <label className="input-label">{label} *</label>
+      {as === 'textarea' ? (
+        <textarea className="input-field" placeholder={placeholder} value={(form as any)[campo]} onChange={set(campo)} rows={3} style={{ resize: 'none', lineHeight: 1.5 }} />
+      ) : (
+        <input className="input-field" type={type} placeholder={placeholder} value={(form as any)[campo]} onChange={set(campo)} />
+      )}
+    </div>
+  )
+
+  return (
+    <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
+      <HeaderInterno titulo="Novo Evento" />
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px', paddingBottom: 32 }}>
+        {erro && (
+          <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, color: '#DC2626', fontSize: 13, fontFamily: 'Poppins' }}>
+            {erro}
+          </div>
+        )}
+
+        <div className="card-solid" style={{ marginBottom: 14 }}>
+          <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informações</p>
+          <Campo label="Nome do Evento" campo="nome" placeholder="Ex.: Acamp 2025" />
+          <Campo label="Data de Início" campo="dataInicio" type="date" />
+          <Campo label="Data de Fim" campo="dataFim" type="date" />
+          <Campo label="Horário" campo="horario" placeholder="Ex.: 18 Hrs" />
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Status *</label>
+            <select className="input-field" value={form.status} onChange={set('status')}>
+              <option value="aberto">Aberto</option>
+              <option value="fechado">Fechado</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="card-solid" style={{ marginBottom: 14 }}>
+          <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financeiro</p>
+          <Campo label="Valor de Investimento R$" campo="valor" type="number" placeholder="Ex.: 200" />
+          <Campo label="Data Limite para Pagamento" campo="dataLimite" type="date" />
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Chave PIX do Evento *</label>
+            <input className="input-field" type="text" placeholder="CPF, CNPJ, telefone ou e-mail" value={form.chavePix} onChange={set('chavePix')} />
+          </div>
+        </div>
+
+        <div className="card-solid" style={{ marginBottom: 24 }}>
+          <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Configurações</p>
+          <div className="input-group">
+            <label className="input-label">Idade mínima para autorização de responsável</label>
+            <input className="input-field" type="number" placeholder="Ex.: 14" value={form.idadeAutorizacao} onChange={set('idadeAutorizacao')} />
+          </div>
+          <div className="input-group" style={{ marginBottom: 0 }}>
+            <label className="input-label">Recomendações</label>
+            <textarea className="input-field" placeholder="Ex.: Levar toalha, kit de higiene pessoal..." value={form.recomendacoes} onChange={set('recomendacoes')} rows={3} style={{ resize: 'none', lineHeight: 1.5 }} />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn-outline" style={{ flex: 1 }} onClick={() => router.back()}>Cancelar</button>
+          <button className="btn-primary" style={{ flex: 1 }} onClick={handleSalvar} disabled={loading}>
+            {loading ? 'Salvando...' : 'Salvar Evento'}
+          </button>
+        </div>
+      </div>
+    </main>
+  )
+}
