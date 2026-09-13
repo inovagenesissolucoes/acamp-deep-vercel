@@ -88,7 +88,7 @@ export default function MenuPage() {
 
         {/* Barra topo */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
             {lider && (
               <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Menu size={18} />
@@ -198,9 +198,9 @@ export default function MenuPage() {
             }}
           />
           <div style={{
-            position: 'fixed', top: 0, right: 0, bottom: 0, width: '82%', maxWidth: 320,
-            background: '#F7F8FC', zIndex: 201, boxShadow: '-8px 0 32px rgba(0,0,0,0.18)',
-            transform: menuAberto ? 'translateX(0)' : 'translateX(100%)',
+            position: 'fixed', top: 0, left: 0, bottom: 0, width: '82%', maxWidth: 320,
+            background: '#F7F8FC', zIndex: 201, boxShadow: '8px 0 32px rgba(0,0,0,0.18)',
+            transform: menuAberto ? 'translateX(0)' : 'translateX(-100%)',
             transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1)',
             display: 'flex', flexDirection: 'column',
           }}>
