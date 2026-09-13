@@ -1,5 +1,4 @@
 'use client'
-import { useRouter } from 'next/navigation'
 import { MessageCircle } from 'lucide-react'
 import HeaderInterno from '@/components/HeaderInterno'
 
@@ -60,7 +59,6 @@ function CardContato({ nome, telefone, tag }: { nome: string; telefone: string; 
 }
 
 export default function AjudaPage() {
-  const router = useRouter()
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
       <HeaderInterno titulo="Ajuda" />
@@ -82,9 +80,7 @@ export default function AjudaPage() {
           </div>
         ))}
 
-        <button className="btn-outline btn-full" style={{ marginTop: 8, marginBottom: 28 }} onClick={() => router.push('/ajuda2')}>
-          Ver mais dúvidas →
-        </button>
+        <div style={{ marginBottom: 28 }} />
 
         {/* Contatos */}
         <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'var(--text-main)', margin: '0 0 12px' }}>

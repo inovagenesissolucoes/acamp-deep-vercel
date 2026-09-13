@@ -6,6 +6,26 @@ import { criarEvento } from '@/lib/api'
 import { getUsuarioLocal, isLider } from '@/lib/auth'
 import { useEffect } from 'react'
 
+function Campo({ label, value, onChange, type = 'text', placeholder = '', as = 'input' }: {
+  label: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+  type?: string
+  placeholder?: string
+  as?: 'input' | 'textarea'
+}) {
+  return (
+    <div className="input-group">
+      <label className="input-label">{label} *</label>
+      {as === 'textarea' ? (
+        <textarea className="input-field" placeholder={placeholder} value={value} onChange={onChange} rows={3} style={{ resize: 'none', lineHeight: 1.5 }} />
+      ) : (
+        <input className="input-field" type={type} placeholder={placeholder} value={value} onChange={onChange} />
+      )}
+    </div>
+  )
+}
+
 export default function NovoEventoPage() {
   const router = useRouter()
   const [form, setForm] = useState({
@@ -66,16 +86,6 @@ export default function NovoEventoPage() {
     )
   }
 
-  const Campo = ({ label, campo, type = 'text', placeholder = '', as = 'input' }: any) => (
-    <div className="input-group">
-      <label className="input-label">{label} *</label>
-      {as === 'textarea' ? (
-        <textarea className="input-field" placeholder={placeholder} value={(form as any)[campo]} onChange={set(campo)} rows={3} style={{ resize: 'none', lineHeight: 1.5 }} />
-      ) : (
-        <input className="input-field" type={type} placeholder={placeholder} value={(form as any)[campo]} onChange={set(campo)} />
-      )}
-    </div>
-  )
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
@@ -89,10 +99,10 @@ export default function NovoEventoPage() {
 
         <div className="card-solid" style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informações</p>
-          <Campo label="Nome do Evento" campo="nome" placeholder="Ex.: Acamp 2025" />
-          <Campo label="Data de Início" campo="dataInicio" type="date" />
-          <Campo label="Data de Fim" campo="dataFim" type="date" />
-          <Campo label="Horário" campo="horario" placeholder="Ex.: 18 Hrs" />
+          <Campo label="Nome do Evento" value={form.nome} onChange={set('nome')} placeholder="Ex.: Acamp 2025" />
+          <Campo label="Data de Início" value={form.dataInicio} onChange={set('dataInicio')} type="date" />
+          <Campo label="Data de Fim" value={form.dataFim} onChange={set('dataFim')} type="date" />
+          <Campo label="Horário" value={form.horario} onChange={set('horario')} placeholder="Ex.: 18 Hrs" />
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label className="input-label">Status *</label>
             <select className="input-field" value={form.status} onChange={set('status')}>
@@ -104,8 +114,8 @@ export default function NovoEventoPage() {
 
         <div className="card-solid" style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financeiro</p>
-          <Campo label="Valor de Investimento R$" campo="valor" type="number" placeholder="Ex.: 200" />
-          <Campo label="Data Limite para Pagamento" campo="dataLimite" type="date" />
+          <Campo label="Valor de Investimento R$" value={form.valor} onChange={set('valor')} type="number" placeholder="Ex.: 200" />
+          <Campo label="Data Limite para Pagamento" value={form.dataLimite} onChange={set('dataLimite')} type="date" />
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label className="input-label">Chave PIX do Evento *</label>
             <input className="input-field" type="text" placeholder="CPF, CNPJ, telefone ou e-mail" value={form.chavePix} onChange={set('chavePix')} />
