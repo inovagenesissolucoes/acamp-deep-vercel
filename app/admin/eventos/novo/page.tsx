@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
-import { criarEvento } from '@/lib/api'
+import { criarEvento, setEventoAtivo } from '@/lib/api'
 import { getUsuarioLocal, isLider } from '@/lib/auth'
 import { useEffect } from 'react'
 
@@ -69,8 +69,10 @@ export default function NovoEventoPage() {
     setLoading(false)
 
     if (res.ok) {
+      const eventoId = (res.data as any)?.id
+      if (eventoId) await setEventoAtivo(eventoId)
       setSucesso(true)
-      setTimeout(() => router.push('/admin/dashboard'), 2000)
+      setTimeout(() => router.push('/menu'), 2000)
     } else {
       setErro(res.erro || 'Erro ao criar evento.')
     }

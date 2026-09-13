@@ -62,7 +62,7 @@ export default function MenuPage() {
   const itensLider = [
     { label: 'Inscritos', icon: <ClipboardList size={20} />, href: '/admin/inscricoes' },
     { label: 'Cadastrados', icon: <Users size={20} />, href: '/admin/cadastrados' },
-    { label: 'Novo Evento', icon: <Tent size={20} />, href: '/admin/eventos/novo' },
+    { label: 'Eventos', icon: <Tent size={20} />, href: '/admin/eventos' },
     { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/admin/dashboard' },
   ]
 
