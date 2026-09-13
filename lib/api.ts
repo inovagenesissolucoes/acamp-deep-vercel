@@ -73,8 +73,8 @@ export const registrarPagamento = (dados: {
   parcelaId: string; comprovanteBase64: string; mimeType: string
 }) => rpc('registrarPagamento', dados)
 
-export const getParcelasInscricao = (inscricaoId: string) =>
-  rpc('getParcelasInscricao', { inscricaoId })
+export const getParcelasInscricao = (parcelaId: string) =>
+  rpc('getParcelasInscricao', { parcelaId })
 
 // ---- USUÁRIOS ----
 export const listarUsuarios = () => rpc('listarUsuarios')

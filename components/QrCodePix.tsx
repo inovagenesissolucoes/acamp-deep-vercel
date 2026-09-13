@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { Check, Copy } from 'lucide-react'
+import QRCode from 'qrcode'
 
 interface Props {
   chavePix: string
@@ -32,9 +33,9 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
       return `${id}${len}${value}`
     }
 
-    const gui = tlv('00', 'BR.GOV.BCB.PIX')
+    const gui = tlv('00', 'br.gov.bcb.pix')
     const pixKey = tlv('01', chave)
-    const adicional = tlv('05', descricao_enc)
+    const adicional = tlv('02', descricao_enc)
     const merchantAccount = tlv('26', gui + pixKey + adicional)
 
     const amount = tlv('54', valorStr)
@@ -68,33 +69,11 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     const canvas = canvasRef.current
     if (!canvas) return
     try {
-      // Usa qrcode-generator simples (sem deps extras)
-      const size = 200
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-
-      // Placeholder visual enquanto não tem a lib instalada
-      ctx.fillStyle = '#fff'
-      ctx.fillRect(0, 0, size, size)
-      ctx.fillStyle = '#5B6FE8'
-      ctx.font = 'bold 11px Poppins, sans-serif'
-      ctx.textAlign = 'center'
-      ctx.fillText('QR Code PIX', size / 2, size / 2 - 10)
-      ctx.fillStyle = '#9E9E9E'
-      ctx.font = '9px Poppins, sans-serif'
-      ctx.fillText('Gerado após npm install', size / 2, size / 2 + 10)
-
-      // Desenhar padrão visual de QR
-      const cellSize = 8
-      const data = text.split('').map(c => c.charCodeAt(0))
-      for (let row = 0; row < 20; row++) {
-        for (let col = 0; col < 20; col++) {
-          if (data[(row * 20 + col) % data.length] % 2 === 0) {
-            ctx.fillStyle = '#1A1A2E'
-            ctx.fillRect(col * cellSize + 4, row * cellSize + 4, cellSize - 1, cellSize - 1)
-          }
-        }
-      }
+      await QRCode.toCanvas(canvas, text, {
+        width: 200,
+        margin: 1,
+        color: { dark: '#1A1A2E', light: '#FFFFFF' },
+      })
       setQrLoaded(true)
     } catch (e) {
       console.error('QR error:', e)
