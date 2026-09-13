@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ClipboardList, User, HelpCircle, BookOpen, LogOut, LayoutDashboard } from 'lucide-react'
+import { ClipboardList, User, HelpCircle, BookOpen, LogOut, Menu, X, Users, Tent } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
 import { getEventoAtivo, getMinhasInscricoes, logout } from '@/lib/api'
@@ -16,6 +16,7 @@ export default function MenuPage() {
   const [loadingParcelas, setLoadingParcelas] = useState(true)
   const [pullY, setPullY] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
+  const [menuAberto, setMenuAberto] = useState(false)
 
   const carregar = useCallback(async () => {
     setLoadingEvento(true)
@@ -59,6 +60,17 @@ export default function MenuPage() {
     { label: 'Manual', icon: <BookOpen size={24} />, href: '/ajuda2' },
   ]
 
+  const itensLider = [
+    { label: 'Inscritos', icon: <ClipboardList size={20} />, href: '/admin/inscricoes' },
+    { label: 'Cadastrados', icon: <Users size={20} />, href: '/admin/cadastrados' },
+    { label: 'Novo Evento', icon: <Tent size={20} />, href: '/admin/eventos/novo' },
+  ]
+
+  const irPara = (href: string) => {
+    setMenuAberto(false)
+    router.push(href)
+  }
+
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
       {/* HEADER AZUL */}
@@ -75,18 +87,24 @@ export default function MenuPage() {
         <div style={{ position: 'absolute', width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -30, left: -20, pointerEvents: 'none' }} />
 
         {/* Barra topo */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          {/* Logo pequena */}
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg viewBox="0 0 100 100" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="50" cy="32" rx="12" ry="12" fill="white"/>
-              <path d="M38 44 Q28 62 33 78 L42 73 Q45 58 50 55 Q55 58 58 73 L67 78 Q72 62 62 44Z" fill="white"/>
-            </svg>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+          <div>
+            <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
+              Seja Bem-Vindo
+            </p>
+            <p style={{
+              fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
+              margin: 0, letterSpacing: '-0.02em',
+              background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            }}>
+              {usuario?.nome || 'Usuário'} ✨
+            </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             {lider && (
-              <button onClick={() => router.push('/admin/dashboard')} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LayoutDashboard size={18} />
+              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Menu size={18} />
               </button>
             )}
             <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -94,19 +112,6 @@ export default function MenuPage() {
             </button>
           </div>
         </div>
-
-        {/* Boas-vindas */}
-        <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
-          Seja Bem-Vindo
-        </p>
-        <p style={{
-          fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
-          margin: '0 0 24px', letterSpacing: '-0.02em',
-          background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-        }}>
-          {usuario?.nome || 'Usuário'} ✨
-        </p>
 
         {/* 4 ícones */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
@@ -177,25 +182,56 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Ações rápidas para Líder */}
-        {lider && (
-          <div style={{ marginTop: 28 }}>
-            <h2 className="section-title">Área do Líder</h2>
-            <div style={{ display: 'flex', gap: 10, padding: '0 16px', overflowX: 'auto', paddingBottom: 4 }}>
-              {[
-                { label: '📋 Inscritos', href: '/admin/inscricoes' },
-                { label: '👥 Cadastrados', href: '/admin/cadastrados' },
-                { label: '🏕️ Novo Evento', href: '/admin/eventos/novo' },
-                { label: '📊 Dashboard', href: '/admin/dashboard' },
-              ].map(a => (
-                <button key={a.href} onClick={() => router.push(a.href)} className="badge-blue" style={{ flexShrink: 0, cursor: 'pointer', padding: '10px 16px', fontSize: 13, fontFamily: 'Poppins', fontWeight: 500, border: 'none' }}>
-                  {a.label}
+        {/* Ações rápidas para Líder foram movidas para o menu lateral (ícone ☰) */}
+      </div>
+
+      {/* MENU LATERAL (LÍDER) */}
+      {lider && (
+        <>
+          <div
+            onClick={() => setMenuAberto(false)}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+              zIndex: 200, opacity: menuAberto ? 1 : 0,
+              pointerEvents: menuAberto ? 'auto' : 'none',
+              transition: 'opacity 0.25s ease',
+            }}
+          />
+          <div style={{
+            position: 'fixed', top: 0, right: 0, bottom: 0, width: '78%', maxWidth: 300,
+            background: 'white', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+            transform: menuAberto ? 'translateX(0)' : 'translateX(100%)',
+            transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1)',
+            display: 'flex', flexDirection: 'column',
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 16px', borderBottom: '1px solid #EEE' }}>
+              <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'var(--text-main)' }}>Área do Líder</span>
+              <button onClick={() => setMenuAberto(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}>
+                <X size={22} />
+              </button>
+            </div>
+            <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {itensLider.map(item => (
+                <button
+                  key={item.href}
+                  onClick={() => irPara(item.href)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '13px 12px', borderRadius: 12, border: 'none',
+                    background: 'none', cursor: 'pointer', textAlign: 'left',
+                    fontFamily: 'Poppins', fontSize: 14, fontWeight: 500,
+                    color: 'var(--text-main)',
+                  }}
+                >
+                  <span style={{ color: '#5B6FE8', display: 'flex' }}>{item.icon}</span>
+                  {item.label}
                 </button>
               ))}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </main>
   )
 }
