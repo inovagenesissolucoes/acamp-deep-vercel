@@ -1,11 +1,11 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, HelpCircle } from 'lucide-react'
 import { login } from '@/lib/api'
 import { salvarUsuario } from '@/lib/auth'
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams?.get('redirect') || '/menu'
@@ -245,5 +245,13 @@ export default function LoginPage() {
         @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
       `}</style>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
   )
 }

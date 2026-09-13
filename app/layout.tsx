@@ -10,10 +10,6 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Acamp Deep',
   },
-  other: {
-    'mobile-web-app-capable': 'yes',
-    'apple-touch-fullscreen': 'yes',
-  },
 }
 
 export const viewport: Viewport = {
@@ -34,6 +30,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-touch-fullscreen" content="yes" />
       </head>
       <body>
         <div className="app-shell">
