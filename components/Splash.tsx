@@ -44,14 +44,7 @@ export default function Splash({ onDone }: { onDone: () => void }) {
           overflow: 'hidden',
         }}
       >
-        <svg viewBox="0 0 100 100" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-          {/* Silhueta mergulhador */}
-          <ellipse cx="50" cy="32" rx="10" ry="10" fill="#1A1A2E"/>
-          <path d="M40 42 Q32 58 36 72 L44 68 Q46 56 50 53 Q54 56 56 68 L64 72 Q68 58 60 42Z" fill="#1A1A2E"/>
-          <path d="M36 52 Q26 48 22 58 L36 61Z" fill="#1A1A2E"/>
-          <path d="M64 52 Q74 48 78 58 L64 61Z" fill="#1A1A2E"/>
-          <text x="50" y="92" textAnchor="middle" fontFamily="Arial Black,sans-serif" fontSize="12" fontWeight="900" fill="#5B6FE8" letterSpacing="2">DEEP</text>
-        </svg>
+        <img src="/logo-deep.png" alt="Acamp Deep" width={80} height={80} style={{ objectFit: 'contain' }} />
       </div>
 
       <p style={{
