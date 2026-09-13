@@ -20,8 +20,33 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     gerarQR(pixCode)
   }, [chavePix, valor, descricao])
 
+  function limparChavePix(chaveOriginal: string): string {
+    const chave = chaveOriginal.trim()
+    // E-mail: mantém como está
+    if (chave.includes('@')) return chave
+    // Chave aleatória (EVP): formato UUID com hífens — mantém como está
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(chave)) return chave
+
+    const temParenteses = chave.includes('(')
+    const apenasNumeros = chave.replace(/[^\d+]/g, '')
+
+    // Telefone: tem parênteses, começa com "+", ou já parece ter DDI 55
+    if (temParenteses || chave.startsWith('+') || (apenasNumeros.length === 13 && apenasNumeros.startsWith('55'))) {
+      const numerosPuros = apenasNumeros.replace(/^\+/, '')
+      const comDDI = numerosPuros.startsWith('55') && numerosPuros.length >= 12 ? numerosPuros : '55' + numerosPuros
+      return '+' + comDDI
+    }
+
+    // CPF (11 dígitos) ou CNPJ (14 dígitos)
+    if (apenasNumeros.length === 11 || apenasNumeros.length === 14) return apenasNumeros
+
+    // Não reconhecido: retorna como veio (evita quebrar chaves em formatos não previstos)
+    return chave
+  }
+
   function gerarCodigoPix(chave: string, val: number, desc?: string): string {
     // Payload PIX simplificado (BR Code)
+    const chaveLimpa = limparChavePix(chave)
     const valorStr = val.toFixed(2)
     const merchantName = 'ACAMP DEEP'
     const merchantCity = 'SAO PAULO'
@@ -34,7 +59,7 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     }
 
     const gui = tlv('00', 'br.gov.bcb.pix')
-    const pixKey = tlv('01', chave)
+    const pixKey = tlv('01', chaveLimpa)
     const adicional = tlv('02', descricao_enc)
     const merchantAccount = tlv('26', gui + pixKey + adicional)
 
