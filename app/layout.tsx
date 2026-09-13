@@ -44,6 +44,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 window.addEventListener('load', () => {
                   navigator.serviceWorker.register('/sw.js').catch(console.error)
                 })
+                let refrescando = false
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  if (refrescando) return
+                  refrescando = true
+                  window.location.reload()
+                })
               }
             `,
           }}
