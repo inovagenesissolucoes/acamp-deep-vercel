@@ -395,7 +395,9 @@ function acaoInscrever(body, usuarioId) {
   if (evento.status !== 'aberto') return { ok: false, erro: 'As inscrições para este evento estão fechadas.' };
 
   // Prazo de inscrição (mesma data limite de pagamento)
-  const prazoEncerrado = new Date() > new Date(evento.dataLimite + 'T23:59:59');
+  const fimDoDiaLimite = new Date(evento.dataLimite);
+  fimDoDiaLimite.setHours(23, 59, 59, 999);
+  const prazoEncerrado = new Date() > fimDoDiaLimite;
   if (prazoEncerrado) {
     const senhaCadastrada = (evento.senhaExcecao || '').toString().trim();
     if (!senhaCadastrada || (senhaExcecao || '').toString().trim() !== senhaCadastrada) {

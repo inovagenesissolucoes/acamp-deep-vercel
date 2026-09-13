@@ -9,8 +9,12 @@ import type { Evento } from '@/components/EventoCard'
 
 const DIAS_DISPONIVEIS = [5, 10, 15, 20, 25]
 
+function apenasData(d: string): string {
+  return d ? d.slice(0, 10) : d
+}
+
 function gerarVencimentosPorDia(diaVencimento: number, dataLimite: string, maxParcelas: number): Date[] {
-  const limite = new Date(dataLimite + 'T23:59:59')
+  const limite = new Date(apenasData(dataLimite) + 'T23:59:59')
   const hoje = new Date()
   let ano = hoje.getFullYear()
   let mes = hoje.getMonth()
@@ -57,7 +61,7 @@ export default function InscricaoPage() {
 
   const prazoEncerrado = useMemo(() => {
     if (!evento) return false
-    return new Date() > new Date(evento.dataLimite + 'T23:59:59')
+    return new Date() > new Date(apenasData(evento.dataLimite) + 'T23:59:59')
   }, [evento])
 
   const vencimentosMaximos = useMemo(() => {
@@ -76,7 +80,7 @@ export default function InscricaoPage() {
   const vencimentosExibidos = vencimentosMaximos.slice(0, parcelas)
 
   function formatarData(iso: string) {
-    return new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'UTC' })
+    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
   }
 
   const handleInscrever = async () => {
@@ -132,35 +136,59 @@ export default function InscricaoPage() {
           <div className="skeleton" style={{ height: 120, marginBottom: 16 }} />
         ) : evento ? (
           <>
-            {/* Card do evento — informações completas */}
-            <div className="card-solid" style={{ marginBottom: 16 }}>
-              <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 18, color: 'var(--text-main)', margin: '0 0 12px', letterSpacing: '-0.02em' }}>
-                {evento.nome}
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <DollarSign size={14} color="var(--primary)" />
-                  <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-main)', fontWeight: 600 }}>
-                    {evento.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            {/* Card do evento — mesmo padrão visual do EventoCard */}
+            <div className="card" style={{ marginBottom: 16 }}>
+              {/* Header do card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #5B6FE8 0%, #9BB0FF 100%)',
+                borderRadius: '10px',
+                padding: '14px 16px',
+                marginBottom: 14,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: '50%',
+                  background: 'white', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 20,
+                }}>
+                  🏕️
+                </div>
+                <div style={{ flex: 1 }}>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em' }}>
+                    {evento.nome}
+                  </p>
+                  <span className="badge-blue" style={{ marginTop: 4, fontSize: 11, background: 'rgba(255,255,255,0.25)' }}>
+                    {prazoEncerrado ? '🔴 Prazo Encerrado' : '🟢 Inscrições Abertas'}
                   </span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              </div>
+
+              {/* Detalhes */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Calendar size={14} color="var(--primary)" />
-                  <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>
-                    {formatarData(evento.dataInicio)} — {formatarData(evento.dataFim)}
+                  <span style={{ fontSize: 13, color: 'var(--text-main)' }}>
+                    {formatarData(evento.dataInicio)} até {formatarData(evento.dataFim)}
                   </span>
                 </div>
                 {evento.horario && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <Clock size={14} color="var(--primary)" />
-                    <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>
-                      {evento.horario}
-                    </span>
+                    <span style={{ fontSize: 13, color: 'var(--text-main)' }}>{evento.horario}</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <DollarSign size={14} color="var(--primary)" />
+                  <span style={{ fontSize: 13, color: 'var(--text-main)' }}>
+                    {evento.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Calendar size={14} color={prazoEncerrado ? '#DC2626' : 'var(--primary)'} />
-                  <span style={{ fontFamily: 'Poppins', fontSize: 13, color: prazoEncerrado ? '#DC2626' : 'var(--text-muted)', fontWeight: prazoEncerrado ? 600 : 400 }}>
+                  <span style={{ fontSize: 13, color: prazoEncerrado ? '#DC2626' : 'var(--text-main)', fontWeight: prazoEncerrado ? 600 : 400 }}>
                     Limite de inscrição: {formatarData(evento.dataLimite)}{prazoEncerrado ? ' (encerrado)' : ''}
                   </span>
                 </div>
@@ -169,7 +197,7 @@ export default function InscricaoPage() {
               {evento.recomendacoes && (
                 <div style={{ display: 'flex', gap: 8, marginTop: 14, padding: 12, background: 'rgba(91,111,232,0.06)', borderRadius: 10 }}>
                   <Info size={15} color="var(--primary)" style={{ flexShrink: 0, marginTop: 1 }} />
-                  <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
+                  <p style={{ fontSize: 12.5, color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
                     {evento.recomendacoes}
                   </p>
                 </div>
