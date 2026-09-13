@@ -14,7 +14,7 @@ const faqs2 = [
 export default function Ajuda2Page() {
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Manual" voltarUrl="/ajuda" />
+      <HeaderInterno titulo="Manual" />
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px', paddingBottom: 32 }}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <div style={{ fontSize: 48, marginBottom: 8 }}>📖</div>
