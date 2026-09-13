@@ -24,15 +24,10 @@ function hashSenha(senha) {
 }
 
 // ---- CORS ----
-function setCORSHeaders(output) {
-  output.setHeader('Access-Control-Allow-Origin', '*');
-  output.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  output.setHeader('Access-Control-Allow-Headers', 'Content-Type, Cookie');
-  return output;
-}
-
+// OBS: ContentService do Apps Script não suporta setHeader() para CORS ou Set-Cookie.
+// Como a chamada é feita servidor-a-servidor (Next.js -> Apps Script), CORS não é necessário aqui.
 function doOptions(e) {
-  return setCORSHeaders(ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT));
+  return ContentService.createTextOutput('').setMimeType(ContentService.MimeType.TEXT);
 }
 
 // ---- SESSÃO ----
@@ -122,30 +117,20 @@ function doPost(e) {
       default: resultado = { ok: false, erro: 'Ação desconhecida: ' + acao };
     }
 
-    const output = ContentService.createTextOutput(JSON.stringify(resultado))
+    // O token de sessão vai no corpo do JSON (não em cookie/header, pois o
+    // Apps Script não suporta Set-Cookie). Quem cria o cookie httpOnly pro
+    // navegador é a rota /api/rpc do Next.js.
+    return ContentService.createTextOutput(JSON.stringify(resultado))
       .setMimeType(ContentService.MimeType.JSON);
-
-    // Setar cookie se login
-    if (acao === 'login' && resultado.ok && resultado._token) {
-      output.setHeader('Set-Cookie',
-        `acamp_sessao=${resultado._token}; HttpOnly; Path=/; SameSite=Lax; Max-Age=604800`
-      );
-      delete resultado._token;
-    }
-
-    return setCORSHeaders(output);
   } catch (err) {
-    return setCORSHeaders(
-      ContentService.createTextOutput(JSON.stringify({ ok: false, erro: err.toString() }))
-        .setMimeType(ContentService.MimeType.JSON)
-    );
+    return ContentService.createTextOutput(JSON.stringify({ ok: false, erro: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function doGet(e) {
-  const output = ContentService.createTextOutput(JSON.stringify({ status: 'ok', app: 'Acamp Deep' }))
+  return ContentService.createTextOutput(JSON.stringify({ status: 'ok', app: 'Acamp Deep' }))
     .setMimeType(ContentService.MimeType.JSON);
-  return setCORSHeaders(output);
 }
 
 // ============================================================
