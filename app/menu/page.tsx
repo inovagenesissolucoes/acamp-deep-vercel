@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { ClipboardList, User, HelpCircle, BookOpen, LogOut, Menu, X, Users, Tent } from 'lucide-react'
+import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
 import { getEventoAtivo, getMinhasInscricoes, logout } from '@/lib/api'
@@ -54,7 +54,6 @@ export default function MenuPage() {
   const lider = isLider(usuario)
 
   const icones = [
-    { label: 'Inscrições', icon: <ClipboardList size={24} />, href: lider ? '/admin/inscricoes' : '/menu' },
     { label: 'Meu Cadastro', icon: <User size={24} />, href: '/meu-cadastro' },
     { label: 'Ajuda', icon: <HelpCircle size={24} />, href: '/ajuda' },
     { label: 'Manual', icon: <BookOpen size={24} />, href: '/ajuda2' },
@@ -64,6 +63,7 @@ export default function MenuPage() {
     { label: 'Inscritos', icon: <ClipboardList size={20} />, href: '/admin/inscricoes' },
     { label: 'Cadastrados', icon: <Users size={20} />, href: '/admin/cadastrados' },
     { label: 'Novo Evento', icon: <Tent size={20} />, href: '/admin/eventos/novo' },
+    { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/admin/dashboard' },
   ]
 
   const irPara = (href: string) => {
@@ -114,7 +114,7 @@ export default function MenuPage() {
         </div>
 
         {/* 4 ícones */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
           {icones.map(item => (
             <button
               key={item.label}

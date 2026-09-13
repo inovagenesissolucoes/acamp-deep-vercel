@@ -1,5 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { MessageCircle } from 'lucide-react'
 import HeaderInterno from '@/components/HeaderInterno'
 
 const faqs = [
@@ -9,6 +10,54 @@ const faqs = [
   { q: 'Preciso de autorização de responsável?', r: 'Participantes menores de uma certa idade (definida pelo líder) precisam informar o WhatsApp de um responsável no momento da inscrição.' },
   { q: 'Como saber se meu pagamento foi confirmado?', r: 'Após enviar o comprovante, a parcela ficará com status "Pago ✅". O líder também receberá uma notificação.' },
 ]
+
+const lideres = [
+  { nome: 'Paloma Clécia', telefone: '11986693746' },
+  { nome: 'Felipe Arruda', telefone: '11981221385' },
+  { nome: 'Pamela Cristina', telefone: '11951482052' },
+  { nome: 'Rafael da Silva', telefone: '11975364000' },
+]
+
+const suporteDev = { nome: 'Wesley Ferreira', telefone: '11934658783' }
+
+function formatarTelefone(numero: string) {
+  const ddd = numero.slice(0, 2)
+  const parte1 = numero.slice(2, numero.length - 4)
+  const parte2 = numero.slice(-4)
+  return `(${ddd}) ${parte1}-${parte2}`
+}
+
+function linkWhatsapp(numero: string) {
+  return `https://wa.me/55${numero}`
+}
+
+function CardContato({ nome, telefone, tag }: { nome: string; telefone: string; tag: string }) {
+  return (
+    <div className="card-solid" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+          <p style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 14, color: 'var(--text-main)', margin: 0 }}>{nome}</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <MessageCircle size={14} color="var(--text-muted)" />
+          <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>{formatarTelefone(telefone)}</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+        <span style={{ fontFamily: 'Poppins', fontSize: 11, color: 'var(--text-muted)' }}>{tag}</span>
+        <a
+          href={linkWhatsapp(telefone)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary"
+          style={{ padding: '7px 16px', fontSize: 12.5, textDecoration: 'none' }}
+        >
+          Conversar
+        </a>
+      </div>
+    </div>
+  )
+}
 
 export default function AjudaPage() {
   const router = useRouter()
@@ -33,9 +82,23 @@ export default function AjudaPage() {
           </div>
         ))}
 
-        <button className="btn-outline btn-full" style={{ marginTop: 8 }} onClick={() => router.push('/ajuda2')}>
+        <button className="btn-outline btn-full" style={{ marginTop: 8, marginBottom: 28 }} onClick={() => router.push('/ajuda2')}>
           Ver mais dúvidas →
         </button>
+
+        {/* Contatos */}
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'var(--text-main)', margin: '0 0 12px' }}>
+          Contatos
+        </h2>
+        {lideres.map(l => (
+          <CardContato key={l.telefone} nome={l.nome} telefone={l.telefone} tag="Líder" />
+        ))}
+
+        {/* Problemas com o app */}
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'var(--text-main)', margin: '24px 0 12px' }}>
+          Problemas com o aplicativo
+        </h2>
+        <CardContato nome={suporteDev.nome} telefone={suporteDev.telefone} tag="Dev" />
       </div>
     </main>
   )
