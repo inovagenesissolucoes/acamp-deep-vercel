@@ -73,7 +73,7 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
       tlv('60', merchantCity.slice(0, 15)) +
       tlv('62', tlv('05', txid.slice(0, 25)))
 
-    const crc = calcularCRC16('6304' + payload)
+    const crc = calcularCRC16(payload + '6304')
     return payload + '6304' + crc
   }
 
