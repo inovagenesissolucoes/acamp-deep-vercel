@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard } from 'lucide-react'
+import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
 import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
@@ -60,9 +60,10 @@ export default function MenuPage() {
   const lider = isLider(usuario)
 
   const icones = [
-    { label: 'Meu Cadastro', icon: <User size={24} />, href: '/meu-cadastro' },
-    { label: 'Ajuda', icon: <HelpCircle size={24} />, href: '/ajuda' },
-    { label: 'Manual', icon: <BookOpen size={24} />, href: '/ajuda2' },
+    { label: 'Início', icon: <Home size={22} />, href: '/menu' },
+    { label: 'Perfil', icon: <User size={22} />, href: '/meu-cadastro' },
+    { label: 'Ajuda', icon: <HelpCircle size={22} />, href: '/ajuda' },
+    { label: 'Manual', icon: <BookOpen size={22} />, href: '/ajuda2' },
   ]
 
   const itensLider = [
@@ -100,18 +101,29 @@ export default function MenuPage() {
                 <Menu size={18} />
               </button>
             )}
-            <div>
-              <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
-                Seja Bem-Vindo
-              </p>
-              <p style={{
-                fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
-                margin: 0, letterSpacing: '-0.02em',
-                background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+                background: 'rgba(255,255,255,0.22)', border: '1.5px solid rgba(255,255,255,0.45)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                {usuario?.nome || 'Usuário'} ✨
-              </p>
+                <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 15, color: 'white' }}>
+                  {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
+                </span>
+              </div>
+              <div>
+                <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
+                  Seja Bem-Vindo
+                </p>
+                <p style={{
+                  fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
+                  margin: 0, letterSpacing: '-0.02em',
+                  background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                }}>
+                  {usuario?.nome || 'Usuário'} ✨
+                </p>
+              </div>
             </div>
           </div>
           <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -299,19 +311,23 @@ export default function MenuPage() {
         background: 'white', borderRadius: 20, boxShadow: '0 8px 28px rgba(0,0,0,0.15)',
         display: 'flex', justifyContent: 'space-around', padding: '10px 4px', zIndex: 50,
       }}>
-        {icones.map(item => (
-          <button
-            key={item.label}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '4px 12px' }}
-            onClick={() => {
-              if (navigator.vibrate) navigator.vibrate(10)
-              router.push(item.href)
-            }}
-          >
-            <div style={{ color: 'var(--primary)' }}>{item.icon}</div>
-            <span style={{ fontFamily: 'Poppins', fontSize: 10.5, fontWeight: 600, color: 'var(--text-main)' }}>{item.label}</span>
-          </button>
-        ))}
+        {icones.map(item => {
+          const ativo = item.href === '/menu'
+          return (
+            <button
+              key={item.label}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '4px 12px' }}
+              onClick={() => {
+                if (navigator.vibrate) navigator.vibrate(10)
+                router.push(item.href)
+              }}
+            >
+              <div style={{ color: ativo ? 'var(--primary)' : 'var(--text-muted)' }}>{item.icon}</div>
+              <span style={{ fontFamily: 'Poppins', fontSize: 10.5, fontWeight: 600, color: ativo ? 'var(--primary)' : 'var(--text-muted)' }}>{item.label}</span>
+              {ativo && <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--primary)' }} />}
+            </button>
+          )
+        })}
       </div>
     </main>
   )
