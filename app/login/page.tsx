@@ -104,7 +104,7 @@ function LoginPageContent() {
               textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em',
               margin: '0 0 10px',
             }}>
-              Contagem regressiva
+              Um encontro com Deus está chegando em
             </p>
             <Countdown dataAlvo={evento.dataFim} />
           </div>

@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { Calendar, Clock, DollarSign } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export interface Evento {
   id: string
@@ -21,8 +22,22 @@ function formatarData(iso: string) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
+function diasRestantes(dataFimIso: string): number {
+  const alvo = new Date(dataFimIso)
+  const agora = new Date()
+  const diff = alvo.getTime() - agora.getTime()
+  return Math.max(0, Math.ceil(diff / 86400000))
+}
+
 export default function EventoCard({ evento, onClick }: { evento: Evento; onClick?: () => void }) {
   const router = useRouter()
+  const [dias, setDias] = useState<number | null>(null)
+
+  useEffect(() => {
+    setDias(diasRestantes(evento.dataFim))
+    const id = setInterval(() => setDias(diasRestantes(evento.dataFim)), 60000)
+    return () => clearInterval(id)
+  }, [evento.dataFim])
 
   const handleClick = () => {
     if (navigator.vibrate) navigator.vibrate(10)
@@ -50,7 +65,7 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
         }}>
           🏕️
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em' }}>
             {evento.nome}
           </p>
@@ -58,6 +73,20 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
             {evento.status === 'aberto' ? '🟢 Inscrições Abertas' : '🔴 Encerrado'}
           </span>
         </div>
+
+        {dias !== null && (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(255,255,255,0.18)', borderRadius: 10, padding: '6px 10px', flexShrink: 0,
+          }}>
+            <span style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 700, fontSize: 18, color: 'white', lineHeight: 1 }}>
+              {dias}
+            </span>
+            <span style={{ fontFamily: 'Poppins, sans-serif', fontSize: 9, color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {dias === 1 ? 'dia' : 'dias'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Detalhes */}
