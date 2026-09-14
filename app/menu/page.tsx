@@ -85,54 +85,42 @@ export default function MenuPage() {
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
         borderBottomLeftRadius: 28,
         borderBottomRightRadius: 28,
-        padding: `calc(env(safe-area-inset-top, 0px) + 14px) 16px 20px`,
+        padding: `calc(env(safe-area-inset-top, 0px) + 18px) 20px 22px`,
         position: 'relative',
         overflow: 'hidden',
       }}>
         {/* Blobs */}
         <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.09)', top: -60, right: -50, pointerEvents: 'none' }} />
 
-        {/* Cartão branco flutuante */}
-        <div style={{
-          background: 'white', borderRadius: 20, padding: '14px 16px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)', position: 'relative',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
             <div style={{
-              width: 46, height: 46, borderRadius: '50%', flexShrink: 0,
-              background: 'linear-gradient(135deg, #5B6FE8, #9BB0FF)',
+              width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
+              background: 'rgba(255,255,255,0.22)', border: '2px solid rgba(255,255,255,0.5)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 15, color: 'white' }}>
+              <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 16, color: 'white' }}>
                 {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
               </span>
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{
-                fontFamily: 'Poppins', fontSize: 16, fontWeight: 700, color: 'var(--text-main)',
+                fontFamily: 'Poppins', fontSize: 17, fontWeight: 700, color: 'white',
                 margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 Olá, {usuario?.nome || 'Usuário'}
               </p>
               <p style={{
-                fontFamily: 'Poppins', fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0',
+                fontFamily: 'Poppins', fontSize: 12, color: 'rgba(255,255,255,0.8)', margin: '2px 0 0',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {usuario?.email}
               </p>
             </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-            {lider && (
-              <button onClick={() => setMenuAberto(true)} style={{ width: 38, height: 38, borderRadius: '50%', background: '#F0F1FB', border: 'none', cursor: 'pointer', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Menu size={18} />
-              </button>
-            )}
-            <button onClick={handleLogout} style={{ width: 38, height: 38, borderRadius: '50%', background: '#F0F1FB', border: 'none', cursor: 'pointer', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LogOut size={18} />
-            </button>
-          </div>
+          <button onClick={() => setMenuAberto(true)} style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Menu size={19} />
+          </button>
         </div>
       </div>
 
@@ -207,78 +195,80 @@ export default function MenuPage() {
         {/* Ações rápidas para Líder foram movidas para o menu lateral (ícone ☰) */}
       </div>
 
-      {/* MENU LATERAL (LÍDER) */}
-      {lider && (
-        <>
-          <div
+      {/* MENU LATERAL */}
+      <div
+        onClick={() => setMenuAberto(false)}
+        style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
+          zIndex: 200, opacity: menuAberto ? 1 : 0,
+          pointerEvents: menuAberto ? 'auto' : 'none',
+          transition: 'opacity 0.25s ease',
+        }}
+      />
+      <div style={{
+        position: 'fixed', top: 0, left: 0, bottom: 0, width: '82%', maxWidth: 320,
+        background: '#F7F8FC', zIndex: 201, boxShadow: '8px 0 32px rgba(0,0,0,0.18)',
+        transform: menuAberto ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1)',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Cabeçalho com dados do usuário */}
+        <div style={{
+          background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
+          padding: `calc(env(safe-area-inset-top, 0px) + 24px) 20px 24px`,
+          position: 'relative', overflow: 'hidden', flexShrink: 0,
+        }}>
+          <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -50, right: -40, pointerEvents: 'none' }} />
+          <button
             onClick={() => setMenuAberto(false)}
             style={{
-              position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
-              zIndex: 200, opacity: menuAberto ? 1 : 0,
-              pointerEvents: menuAberto ? 'auto' : 'none',
-              transition: 'opacity 0.25s ease',
+              position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 16px)', right: 16,
+              width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.2)',
+              border: 'none', cursor: 'pointer', color: 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
-          />
+          >
+            <X size={18} />
+          </button>
+
           <div style={{
-            position: 'fixed', top: 0, left: 0, bottom: 0, width: '82%', maxWidth: 320,
-            background: '#F7F8FC', zIndex: 201, boxShadow: '8px 0 32px rgba(0,0,0,0.18)',
-            transform: menuAberto ? 'translateX(0)' : 'translateX(-100%)',
-            transition: 'transform 0.28s cubic-bezier(0.32,0.72,0,1)',
-            display: 'flex', flexDirection: 'column',
+            width: 56, height: 56, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.22)', border: '2px solid rgba(255,255,255,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 12, position: 'relative', zIndex: 1,
           }}>
-            {/* Cabeçalho com dados do usuário */}
-            <div style={{
-              background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
-              padding: `calc(env(safe-area-inset-top, 0px) + 24px) 20px 24px`,
-              position: 'relative', overflow: 'hidden', flexShrink: 0,
+            <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 20, color: 'white' }}>
+              {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
+            </span>
+          </div>
+
+          <p style={{
+            fontFamily: 'Poppins', fontWeight: 700, fontSize: 17, color: 'white',
+            margin: '0 0 3px', position: 'relative', zIndex: 1,
+          }}>
+            {usuario?.nome} {usuario?.sobrenome}
+          </p>
+          <p style={{
+            fontFamily: 'Poppins', fontSize: 12.5, color: 'rgba(255,255,255,0.8)',
+            margin: 0, position: 'relative', zIndex: 1,
+          }}>
+            {usuario?.email}
+          </p>
+          {lider && (
+            <span style={{
+              display: 'inline-block', marginTop: 10, padding: '3px 10px', borderRadius: 999,
+              background: 'rgba(255,255,255,0.2)', fontFamily: 'Poppins', fontSize: 11, fontWeight: 600,
+              color: 'white', letterSpacing: 0.3, position: 'relative', zIndex: 1,
             }}>
-              <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', top: -50, right: -40, pointerEvents: 'none' }} />
-              <button
-                onClick={() => setMenuAberto(false)}
-                style={{
-                  position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 16px)', right: 16,
-                  width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.2)',
-                  border: 'none', cursor: 'pointer', color: 'white',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}
-              >
-                <X size={18} />
-              </button>
+              LÍDER
+            </span>
+          )}
+        </div>
 
-              <div style={{
-                width: 56, height: 56, borderRadius: '50%',
-                background: 'rgba(255,255,255,0.22)', border: '2px solid rgba(255,255,255,0.5)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: 12, position: 'relative', zIndex: 1,
-              }}>
-                <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 20, color: 'white' }}>
-                  {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
-                </span>
-              </div>
-
-              <p style={{
-                fontFamily: 'Poppins', fontWeight: 700, fontSize: 17, color: 'white',
-                margin: '0 0 3px', position: 'relative', zIndex: 1,
-              }}>
-                {usuario?.nome} {usuario?.sobrenome}
-              </p>
-              <p style={{
-                fontFamily: 'Poppins', fontSize: 12.5, color: 'rgba(255,255,255,0.8)',
-                margin: 0, position: 'relative', zIndex: 1,
-              }}>
-                {usuario?.email}
-              </p>
-              <span style={{
-                display: 'inline-block', marginTop: 10, padding: '3px 10px', borderRadius: 999,
-                background: 'rgba(255,255,255,0.2)', fontFamily: 'Poppins', fontSize: 11, fontWeight: 600,
-                color: 'white', letterSpacing: 0.3, position: 'relative', zIndex: 1,
-              }}>
-                LÍDER
-              </span>
-            </div>
-
-            {/* Itens do menu */}
-            <div style={{ padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {/* Itens do menu */}
+        <div style={{ padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+          {lider && (
+            <>
               <span style={{ fontFamily: 'Poppins', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.4, padding: '0 10px 6px' }}>
                 ÁREA DO LÍDER
               </span>
@@ -304,16 +294,34 @@ export default function MenuPage() {
                   {item.label}
                 </button>
               ))}
-            </div>
-          </div>
-        </>
-      )}
+            </>
+          )}
+        </div>
 
-      {/* Barra flutuante fixa */}
+        {/* Sair */}
+        <div style={{ padding: '14px', borderTop: '1px solid #EAEAEA' }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', padding: '12px', borderRadius: 14, border: 'none',
+              background: 'rgba(220,38,38,0.08)', cursor: 'pointer',
+              fontFamily: 'Poppins', fontSize: 14, fontWeight: 600, color: '#DC2626',
+            }}
+          >
+            <LogOut size={18} /> Sair
+          </button>
+        </div>
+      </div>
+
+      {/* Navegação inferior fixa */}
       <div style={{
-        position: 'fixed', left: 16, right: 16, bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)',
-        background: 'white', borderRadius: 20, boxShadow: '0 8px 28px rgba(0,0,0,0.15)',
-        display: 'flex', justifyContent: 'space-around', padding: '10px 4px', zIndex: 50,
+        position: 'fixed', left: 0, right: 0, bottom: 0,
+        background: 'white', borderTopLeftRadius: 22, borderTopRightRadius: 22,
+        boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+        display: 'flex', justifyContent: 'space-around',
+        padding: `10px 4px calc(env(safe-area-inset-bottom, 0px) + 10px)`,
+        zIndex: 50,
       }}>
         {icones.map(item => {
           const ativo = item.href === '/menu'
