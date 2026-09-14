@@ -83,21 +83,25 @@ export default function MenuPage() {
       {/* HEADER AZUL */}
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
-        padding: `calc(env(safe-area-inset-top, 0px) + 14px) 20px 18px`,
+        borderBottomLeftRadius: 28,
+        borderBottomRightRadius: 28,
+        padding: `calc(env(safe-area-inset-top, 0px) + 14px) 16px 20px`,
         position: 'relative',
         overflow: 'hidden',
       }}>
         {/* Blobs */}
-        <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', top: -60, right: -50, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.09)', top: -60, right: -50, pointerEvents: 'none' }} />
 
-        {/* Barra topo */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+        {/* Cartão branco flutuante */}
+        <div style={{
+          background: 'white', borderRadius: 20, padding: '14px 16px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)', position: 'relative',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
             <div style={{
-              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-              background: 'rgba(255,255,255,0.22)', border: '1.5px solid rgba(255,255,255,0.45)',
+              width: 46, height: 46, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #5B6FE8, #9BB0FF)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 15, color: 'white' }}>
@@ -106,13 +110,13 @@ export default function MenuPage() {
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{
-                fontFamily: 'Poppins', fontSize: 17, fontWeight: 700, color: 'white',
+                fontFamily: 'Poppins', fontSize: 16, fontWeight: 700, color: 'var(--text-main)',
                 margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
-                {usuario?.nome || 'Usuário'} {usuario?.sobrenome || ''}
+                Olá, {usuario?.nome || 'Usuário'}
               </p>
               <p style={{
-                fontFamily: 'Poppins', fontSize: 12, color: 'rgba(255,255,255,0.8)', margin: '2px 0 0',
+                fontFamily: 'Poppins', fontSize: 12, color: 'var(--text-muted)', margin: '2px 0 0',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {usuario?.email}
@@ -121,11 +125,11 @@ export default function MenuPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             {lider && (
-              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <button onClick={() => setMenuAberto(true)} style={{ width: 38, height: 38, borderRadius: '50%', background: '#F0F1FB', border: 'none', cursor: 'pointer', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Menu size={18} />
               </button>
             )}
-            <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={handleLogout} style={{ width: 38, height: 38, borderRadius: '50%', background: '#F0F1FB', border: 'none', cursor: 'pointer', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <LogOut size={18} />
             </button>
           </div>
