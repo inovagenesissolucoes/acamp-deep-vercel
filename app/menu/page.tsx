@@ -147,7 +147,19 @@ export default function MenuPage() {
               <div className="skeleton" style={{ height: 180 }} />
             </div>
           ) : evento ? (
-            <EventoCard evento={evento} />
+            evento.status === 'concluido' ? (
+              <div style={{ margin: '0 16px', background: 'white', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+                <span style={{ fontSize: 36 }}>🎉</span>
+                <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: '10px 0 2px' }}>
+                  {evento.nome} concluído!
+                </p>
+                <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>
+                  Aguardando o próximo acampamento ✨
+                </p>
+              </div>
+            ) : (
+              <EventoCard evento={evento} />
+            )
           ) : (
             <div style={{ margin: '0 16px', background: 'white', borderRadius: 14, padding: 20, textAlign: 'center' }}>
               <span style={{ fontSize: 32 }}>🏕️</span>
@@ -176,7 +188,7 @@ export default function MenuPage() {
                 <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)', margin: '8px 0 0' }}>
                   Você não possui parcelas no momento
                 </p>
-                {evento && (
+                {evento && evento.status !== 'concluido' && (
                   <button className="btn-primary" style={{ marginTop: 14, padding: '10px 24px', fontSize: 13 }} onClick={() => router.push(`/inscricao/${evento!.id}`)}>
                     Inscrever-se no evento
                   </button>

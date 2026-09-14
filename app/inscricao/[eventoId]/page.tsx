@@ -59,6 +59,8 @@ export default function InscricaoPage() {
     })
   }, [eventoId])
 
+  const concluido = evento?.status === 'concluido'
+
   const prazoEncerrado = useMemo(() => {
     if (!evento) return false
     return new Date() > new Date(apenasData(evento.dataLimite) + 'T23:59:59')
@@ -84,6 +86,10 @@ export default function InscricaoPage() {
   }
 
   const handleInscrever = async () => {
+    if (concluido) {
+      setErro('Este evento já foi concluído.')
+      return
+    }
     if (precisaResponsavel && !whatsappResponsavel) {
       setErro('Informe o WhatsApp do responsável (obrigatório para menores).')
       return
@@ -161,7 +167,7 @@ export default function InscricaoPage() {
                     {evento.nome}
                   </p>
                   <span className="badge-blue" style={{ marginTop: 4, fontSize: 11, background: 'rgba(255,255,255,0.25)' }}>
-                    {prazoEncerrado ? '🔴 Prazo Encerrado' : '🟢 Inscrições Abertas'}
+                    {concluido ? '✅ Concluído' : prazoEncerrado ? '🔴 Prazo Encerrado' : '🟢 Inscrições Abertas'}
                   </span>
                 </div>
               </div>
@@ -204,6 +210,22 @@ export default function InscricaoPage() {
               )}
             </div>
 
+            {/* Evento concluído: bloqueia por completo, nem senha de exceção resolve */}
+            {concluido ? (
+              <div className="card-solid" style={{ textAlign: 'center', padding: 28 }}>
+                <span style={{ fontSize: 36 }}>🎉</span>
+                <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: '10px 0 4px' }}>
+                  Este evento já foi concluído
+                </p>
+                <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>
+                  Fique de olho no próximo acampamento!
+                </p>
+                <button className="btn-outline" style={{ marginTop: 18 }} onClick={() => router.push('/menu')}>
+                  Voltar ao início
+                </button>
+              </div>
+            ) : (
+              <>
             {/* Bloqueio de prazo */}
             {prazoEncerrado && (
               <div className="card-solid" style={{ marginBottom: 16, borderLeft: '3px solid #DC2626' }}>
@@ -320,6 +342,8 @@ export default function InscricaoPage() {
                 {loading ? 'Inscrevendo...' : 'Inscrever-se'}
               </button>
             </div>
+              </>
+            )}
           </>
         ) : (
           <div style={{ textAlign: 'center', padding: 40 }}>

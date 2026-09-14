@@ -116,8 +116,8 @@ export default function NovoEventoPage() {
         <div className="card-solid" style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informações</p>
           <Campo label="Nome do Evento" value={form.nome} onChange={set('nome')} placeholder="Ex.: Acamp 2025" />
-          <Campo label="Data de Início" value={form.dataInicio} onChange={set('dataInicio')} type="date" />
-          <Campo label="Data de Fim" value={form.dataFim} onChange={set('dataFim')} type="date" />
+          <Campo label="Data Início (Evento)" value={form.dataInicio} onChange={set('dataInicio')} type="date" />
+          <Campo label="Data Fim (Evento)" value={form.dataFim} onChange={set('dataFim')} type="date" />
           <Campo label="Horário" value={form.horario} onChange={set('horario')} placeholder="Ex.: 18 Hrs" />
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label className="input-label">Status *</label>
@@ -131,7 +131,7 @@ export default function NovoEventoPage() {
         <div className="card-solid" style={{ marginBottom: 14 }}>
           <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financeiro</p>
           <Campo label="Valor de Investimento R$" value={form.valor} onChange={set('valor')} type="number" placeholder="Ex.: 200" />
-          <Campo label="Data Limite para Pagamento" value={form.dataLimite} onChange={set('dataLimite')} type="date" />
+          <Campo label="Data Limite (Pagamento)" value={form.dataLimite} onChange={set('dataLimite')} type="date" />
           <div className="input-group" style={{ marginBottom: 12 }}>
             <label className="input-label">Tipo de Chave PIX *</label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>

@@ -106,7 +106,7 @@ function LoginPageContent() {
             }}>
               Um encontro com Deus está chegando em
             </p>
-            <Countdown dataAlvo={evento.dataFim} />
+            <Countdown dataAlvo={evento.dataInicio} />
           </div>
         )}
       </div>

@@ -55,7 +55,7 @@ export default function EventoDetalhe() {
                   {evento.nome}
                 </h2>
                 <span style={{ fontFamily: 'Poppins', fontSize: 12, color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.2)', padding: '3px 10px', borderRadius: 20 }}>
-                  {evento.status === 'aberto' ? '🟢 Inscrições Abertas' : '🔴 Encerrado'}
+                  {evento.status === 'aberto' ? '🟢 Inscrições Abertas' : evento.status === 'concluido' ? '✅ Concluído' : '🔴 Prazo Encerrado'}
                 </span>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function EventoDetalhe() {
             )}
 
             {/* CTA */}
-            {evento.status === 'aberto' && (
+            {evento.status !== 'concluido' && (
               <button
                 className="btn-primary btn-full"
                 onClick={() => {

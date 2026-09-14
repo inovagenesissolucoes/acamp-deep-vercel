@@ -48,10 +48,10 @@ export default function EditarEventoPage() {
         <div className="card-solid" style={{ marginBottom: 14 }}>
           {[
             { label: 'Nome do Evento', campo: 'nome', type: 'text', placeholder: 'Ex.: Acamp 2025' },
-            { label: 'Data de Início', campo: 'dataInicio', type: 'date' },
-            { label: 'Data de Fim', campo: 'dataFim', type: 'date' },
+            { label: 'Data Início (Evento)', campo: 'dataInicio', type: 'date' },
+            { label: 'Data Fim (Evento)', campo: 'dataFim', type: 'date' },
             { label: 'Horário', campo: 'horario', type: 'text', placeholder: 'Ex.: 18 Hrs' },
-            { label: 'Data Limite', campo: 'dataLimite', type: 'date' },
+            { label: 'Data Limite (Pagamento)', campo: 'dataLimite', type: 'date' },
             { label: 'Valor (R$)', campo: 'valor', type: 'number' },
           ].map(({ label, campo, type, placeholder }) => (
             <div key={campo} className="input-group">

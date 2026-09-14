@@ -269,8 +269,25 @@ function sheetToObjects(sheet) {
   });
 }
 
+function fimDoDia(dataStr) {
+  const d = new Date(dataStr);
+  d.setHours(23, 59, 59, 999);
+  return d;
+}
+
+// Calcula o status "de verdade" do evento com base nas datas, sem depender
+// de nenhuma tarefa agendada: concluído (passou a data fim), fechado
+// (passou o prazo de pagamento, mas o evento ainda não aconteceu) ou o
+// status manual que o líder definiu (normalmente "aberto").
+function statusEfetivo(evento) {
+  const hoje = new Date();
+  if (evento.dataFim && hoje > fimDoDia(evento.dataFim)) return 'concluido';
+  if (evento.dataLimite && hoje > fimDoDia(evento.dataLimite)) return 'fechado';
+  return evento.status || 'aberto';
+}
+
 function acaoListarEventos() {
-  const eventos = sheetToObjects(getSheet('eventos'));
+  const eventos = sheetToObjects(getSheet('eventos')).map(e => ({ ...e, status: statusEfetivo(e) }));
   return { ok: true, data: eventos };
 }
 
@@ -291,7 +308,12 @@ function acaoGetEvento(body, usuarioId) {
   const evento = buscarEventoBruto(id);
   if (!evento) return { ok: false, erro: 'Evento não encontrado.' };
   const { senhaExcecao, ...eventoPublico } = evento;
-  const dados = { ...eventoPublico, valor: parseFloat(evento.valor) || 0, temExcecaoPrazo: !!(senhaExcecao && senhaExcecao.toString().trim()) };
+  const dados = {
+    ...eventoPublico,
+    status: statusEfetivo(evento),
+    valor: parseFloat(evento.valor) || 0,
+    temExcecaoPrazo: !!(senhaExcecao && senhaExcecao.toString().trim()),
+  };
   if (verificarLider(usuarioId)) dados.senhaExcecao = senhaExcecao || '';
   return { ok: true, data: dados };
 }
@@ -339,6 +361,8 @@ function acaoSetEventoAtivo(body, usuarioId) {
   } else {
     sheet.getRange(2, 1).setValue(body.eventoId);
   }
+  // Um evento ativo passa a aceitar inscrições automaticamente
+  acaoEditarEvento({ id: body.eventoId, status: 'aberto' }, usuarioId);
   return { ok: true };
 }
 
@@ -392,12 +416,15 @@ function acaoInscrever(body, usuarioId) {
 
   const evento = buscarEventoBruto(eventoId);
   if (!evento) return { ok: false, erro: 'Evento não encontrado.' };
-  if (evento.status !== 'aberto') return { ok: false, erro: 'As inscrições para este evento estão fechadas.' };
+  if (evento.status === 'fechado') return { ok: false, erro: 'As inscrições para este evento estão fechadas.' };
 
-  // Prazo de inscrição (mesma data limite de pagamento)
-  const fimDoDiaLimite = new Date(evento.dataLimite);
-  fimDoDiaLimite.setHours(23, 59, 59, 999);
-  const prazoEncerrado = new Date() > fimDoDiaLimite;
+  // Evento já concluído (passou a data fim): não aceita nem com senha de exceção
+  if (evento.dataFim && new Date() > fimDoDia(evento.dataFim)) {
+    return { ok: false, erro: 'Este evento já foi concluído.' };
+  }
+
+  // Prazo de pagamento encerrado, mas evento ainda não aconteceu: exige senha de exceção
+  const prazoEncerrado = new Date() > fimDoDia(evento.dataLimite);
   if (prazoEncerrado) {
     const senhaCadastrada = (evento.senhaExcecao || '').toString().trim();
     if (!senhaCadastrada || (senhaExcecao || '').toString().trim() !== senhaCadastrada) {
