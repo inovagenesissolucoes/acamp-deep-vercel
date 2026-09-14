@@ -118,28 +118,10 @@ export default function MenuPage() {
             <LogOut size={18} />
           </button>
         </div>
-
-        {/* 4 ícones */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
-          {icones.map(item => (
-            <button
-              key={item.label}
-              className="menu-icon"
-              style={{ background: 'none', border: 'none', padding: '8px 4px' }}
-              onClick={() => {
-                if (navigator.vibrate) navigator.vibrate(10)
-                router.push(item.href)
-              }}
-            >
-              <div className="menu-icon-circle">{item.icon}</div>
-              <span className="menu-icon-label">{item.label}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* CORPO */}
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 24 }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 110 }}>
 
         {/* Evento Ativo */}
         <div style={{ marginTop: 24 }}>
@@ -310,6 +292,27 @@ export default function MenuPage() {
           </div>
         </>
       )}
+
+      {/* Barra flutuante fixa */}
+      <div style={{
+        position: 'fixed', left: 16, right: 16, bottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)',
+        background: 'white', borderRadius: 20, boxShadow: '0 8px 28px rgba(0,0,0,0.15)',
+        display: 'flex', justifyContent: 'space-around', padding: '10px 4px', zIndex: 50,
+      }}>
+        {icones.map(item => (
+          <button
+            key={item.label}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '4px 12px' }}
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(10)
+              router.push(item.href)
+            }}
+          >
+            <div style={{ color: 'var(--primary)' }}>{item.icon}</div>
+            <span style={{ fontFamily: 'Poppins', fontSize: 10.5, fontWeight: 600, color: 'var(--text-main)' }}>{item.label}</span>
+          </button>
+        ))}
+      </div>
     </main>
   )
 }
