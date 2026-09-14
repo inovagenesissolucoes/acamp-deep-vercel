@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                   if (refrescando) return
                   refrescando = true
-                  window.location.reload()
+                  window.location.href = '/'
                 })
               }
             `,

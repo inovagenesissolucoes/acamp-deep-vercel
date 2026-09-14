@@ -5,6 +5,7 @@ import { Eye, EyeOff, HelpCircle } from 'lucide-react'
 import { login, getEventoAtivo } from '@/lib/api'
 import { salvarUsuario } from '@/lib/auth'
 import Countdown from '@/components/Countdown'
+import InstallPrompt from '@/components/InstallPrompt'
 import type { Evento } from '@/components/EventoCard'
 
 function LoginPageContent() {
@@ -51,6 +52,7 @@ function LoginPageContent() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <InstallPrompt />
       {/* ÁREA AZUL */}
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
