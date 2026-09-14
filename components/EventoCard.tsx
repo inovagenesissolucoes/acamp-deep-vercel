@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, DollarSign } from 'lucide-react'
+import { Calendar, Clock, DollarSign, Check } from 'lucide-react'
 import Countdown from './Countdown'
 
 export interface Evento {
@@ -22,12 +22,19 @@ function formatarData(iso: string) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-export default function EventoCard({ evento, onClick }: { evento: Evento; onClick?: () => void }) {
+export default function EventoCard({ evento, inscrito, onClick }: { evento: Evento; inscrito?: boolean; onClick?: () => void }) {
   const router = useRouter()
 
   const handleClick = () => {
     if (navigator.vibrate) navigator.vibrate(10)
     onClick ? onClick() : router.push(`/evento/${evento.id}`)
+  }
+
+  const handleInscricao = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (inscrito) return
+    if (navigator.vibrate) navigator.vibrate(10)
+    router.push(`/inscricao/${evento.id}`)
   }
 
   return (
@@ -48,9 +55,14 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
           }}>
             🏕️
           </div>
-          <p style={{ margin: 0, flex: 1, minWidth: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {evento.nome}
-          </p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {evento.nome}
+            </p>
+            <p style={{ margin: '2px 0 0', fontSize: 11.5, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              Um encontro com Deus vem aí.
+            </p>
+          </div>
           <span style={{
             flexShrink: 0, fontSize: 10.5, fontWeight: 600, color: 'white',
             background: 'rgba(255,255,255,0.18)', padding: '4px 9px', borderRadius: 999,
@@ -62,7 +74,22 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.15)', margin: '14px 0' }} />
 
-        <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
+          <button
+            onClick={handleInscricao}
+            disabled={inscrito}
+            style={{
+              flexShrink: 0, border: 'none', cursor: inscrito ? 'default' : 'pointer',
+              padding: '9px 14px', borderRadius: 10, fontSize: 12.5, fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 5,
+              background: inscrito ? 'rgba(255,255,255,0.15)' : 'white',
+              color: inscrito ? 'white' : 'var(--primary)',
+            }}
+          >
+            {inscrito ? (<><Check size={14} /> Inscrito</>) : 'Inscreva-se'}
+          </button>
+        </div>
       </div>
 
       {/* Detalhes */}
@@ -77,14 +104,11 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
           <Clock size={14} color="var(--primary)" />
           <span style={{ fontSize: 13, color: 'var(--text-main)' }}>{evento.horario}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <DollarSign size={14} color="var(--primary)" />
-            <span style={{ fontSize: 13, color: 'var(--text-main)' }}>
-              {evento.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-            </span>
-          </div>
-          <span className="badge-blue">Inscrição</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <DollarSign size={14} color="var(--primary)" />
+          <span style={{ fontSize: 13, color: 'var(--text-main)' }}>
+            {evento.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+          </span>
         </div>
       </div>
 

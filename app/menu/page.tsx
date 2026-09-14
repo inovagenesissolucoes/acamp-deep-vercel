@@ -19,6 +19,7 @@ export default function MenuPage() {
   const [pullY, setPullY] = useState(0)
   const [refreshing, setRefreshing] = useState(false)
   const [menuAberto, setMenuAberto] = useState(false)
+  const [eventosInscritos, setEventosInscritos] = useState<string[]>([])
 
   const carregar = useCallback(async () => {
     setLoadingEvento(true)
@@ -36,6 +37,7 @@ export default function MenuPage() {
       const inscricoes = inscRes.data as any[]
       const todasParcelas: Parcela[] = inscricoes.flatMap((i: any) => i.parcelas || [])
       setParcelas(todasParcelas)
+      setEventosInscritos(inscricoes.map((i: any) => i.eventoId))
     }
     setLoadingParcelas(false)
 
@@ -158,7 +160,7 @@ export default function MenuPage() {
                 </p>
               </div>
             ) : (
-              <EventoCard evento={evento} />
+              <EventoCard evento={evento} inscrito={eventosInscritos.includes(evento.id)} />
             )
           ) : (
             <div style={{ margin: '0 16px', background: 'white', borderRadius: 14, padding: 20, textAlign: 'center' }}>
