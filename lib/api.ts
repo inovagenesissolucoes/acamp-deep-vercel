@@ -6,7 +6,7 @@
 export type AcaoAPI =
   | 'login' | 'logout' | 'cadastrar' | 'recuperarSenha'
   | 'listarEventos' | 'getEventoAtivo' | 'getEvento' | 'criarEvento' | 'editarEvento' | 'setEventoAtivo'
-  | 'inscrever' | 'listarInscricoes' | 'getMinhasInscricoes'
+  | 'inscrever' | 'listarInscricoes' | 'getMinhasInscricoes' | 'getInscricaoDetalhe'
   | 'registrarPagamento' | 'getParcelasInscricao'
   | 'listarUsuarios' | 'getUsuario' | 'editarUsuario'
   | 'uploadMidia' | 'listarGaleria'
@@ -65,6 +65,9 @@ export const inscrever = (dados: {
 
 export const listarInscricoes = (eventoId: string) =>
   rpc('listarInscricoes', { eventoId })
+
+export const getInscricaoDetalhe = (inscricaoId: string) =>
+  rpc('getInscricaoDetalhe', { inscricaoId })
 
 export const getMinhasInscricoes = () => rpc('getMinhasInscricoes')
 

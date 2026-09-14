@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
   function whatsapp(tel: string) {
     const limpo = tel.replace(/\D/g, '')
-    window.open(`https://wa.me/55${limpo}`, '_blank')
+    window.location.href = `https://wa.me/55${limpo}`
   }
 
   function fmt(v: number) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }
@@ -171,7 +171,7 @@ export default function DashboardPage() {
                 const perc = total > 0 ? (pago / total) * 100 : 0
 
                 return (
-                  <div key={inscrito.id} className="card-solid" style={{ marginBottom: 10 }}>
+                  <div key={inscrito.id} className="card-solid" style={{ marginBottom: 10, cursor: 'pointer' }} onClick={() => router.push(`/admin/inscritos/${inscrito.id}`)}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ flex: 1 }}>
                         <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: '0 0 4px' }}>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <button
-                        onClick={() => whatsapp(inscrito.telefone)}
+                        onClick={(e) => { e.stopPropagation(); whatsapp(inscrito.telefone) }}
                         style={{ marginLeft: 12, width: 38, height: 38, borderRadius: '50%', background: '#25D366', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">

@@ -96,6 +96,7 @@ function doPost(e) {
       // INSCRIÇÕES
       case 'inscrever': resultado = acaoInscrever(body, usuarioId); break;
       case 'listarInscricoes': resultado = acaoListarInscricoes(body, usuarioId); break;
+      case 'getInscricaoDetalhe': resultado = acaoGetInscricaoDetalhe(body, usuarioId); break;
       case 'getMinhasInscricoes': resultado = acaoGetMinhasInscricoes(usuarioId); break;
 
       // PAGAMENTOS
@@ -474,6 +475,39 @@ function acaoListarInscricoes(body, usuarioId) {
   });
 
   return { ok: true, data: resultado };
+}
+
+function acaoGetInscricaoDetalhe(body, usuarioId) {
+  if (!verificarLider(usuarioId)) return { ok: false, erro: 'Acesso negado.' };
+  const { inscricaoId } = body;
+
+  const inscricoes = sheetToObjects(getSheet('inscricoes'));
+  const insc = inscricoes.find(i => i.id === inscricaoId);
+  if (!insc) return { ok: false, erro: 'Inscrição não encontrada.' };
+
+  const usuarios = sheetToObjects(getSheet('usuarios'));
+  const usuario = usuarios.find(u => u.id === insc.usuarioId) || {};
+  const evento = buscarEventoBruto(insc.eventoId) || {};
+
+  const parcelas = sheetToObjects(getSheet('parcelas'))
+    .filter(p => p.inscricaoId === inscricaoId)
+    .map(p => ({ ...p, valor: parseFloat(p.valor) || 0 }))
+    .sort((a, b) => Number(a.numero) - Number(b.numero));
+
+  return {
+    ok: true,
+    data: {
+      id: insc.id,
+      nome: usuario.nome || '',
+      sobrenome: usuario.sobrenome || '',
+      telefone: usuario.telefone || '',
+      email: usuario.email || '',
+      dataNascimento: usuario.dataNascimento || '',
+      eventoNome: evento.nome || '',
+      whatsappResponsavel: insc.whatsappResponsavel || '',
+      parcelas,
+    },
+  };
 }
 
 function acaoGetMinhasInscricoes(usuarioId) {

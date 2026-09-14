@@ -111,10 +111,6 @@ export default function EventoCard({ evento, inscrito, onClick }: { evento: Even
           </span>
         </div>
       </div>
-
-      <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
-        Toque no card para mais detalhes
-      </p>
     </div>
   )
 }
