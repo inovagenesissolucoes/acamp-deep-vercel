@@ -36,28 +36,31 @@ export default function EventoCard({ evento, onClick }: { evento: Evento; onClic
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #9BB0FF 100%)',
         borderRadius: '10px',
-        padding: '14px 16px',
+        padding: '16px',
         marginBottom: 14,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-          {/* Logo placeholder circular */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
-            width: 44, height: 44, borderRadius: '50%',
-            background: 'white', flexShrink: 0,
+            width: 36, height: 36, borderRadius: 10,
+            background: 'rgba(255,255,255,0.18)', flexShrink: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20,
+            fontSize: 17,
           }}>
             🏕️
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em' }}>
-              {evento.nome}
-            </p>
-            <span className="badge-blue" style={{ marginTop: 4, fontSize: 11, background: 'rgba(255,255,255,0.25)' }}>
-              {evento.status === 'aberto' ? '🟢 Inscrições Abertas' : evento.status === 'concluido' ? '✅ Concluído' : '🔴 Prazo Encerrado'}
-            </span>
-          </div>
+          <p style={{ margin: 0, flex: 1, minWidth: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {evento.nome}
+          </p>
+          <span style={{
+            flexShrink: 0, fontSize: 10.5, fontWeight: 600, color: 'white',
+            background: 'rgba(255,255,255,0.18)', padding: '4px 9px', borderRadius: 999,
+            whiteSpace: 'nowrap',
+          }}>
+            {evento.status === 'aberto' ? '🟢 Abertas' : evento.status === 'concluido' ? '✅ Concluído' : '🔴 Encerrado'}
+          </span>
         </div>
+
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.15)', margin: '14px 0' }} />
 
         <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
       </div>
