@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation'
 import { User, HelpCircle, BookOpen, LogOut, Menu, X, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight, Share2 } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import type { Parcela } from '@/components/ParcelaCard'
-import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
-import { getEventoAtivo, getMinhasInscricoes, listarGaleria, logout } from '@/lib/api'
+import { getEventoAtivo, getMinhasInscricoes, logout } from '@/lib/api'
 import { getUsuarioLocal, isLider, limparSessao } from '@/lib/auth'
 
 export default function MenuPage() {
@@ -13,7 +12,6 @@ export default function MenuPage() {
   const [usuario, setUsuario] = useState<ReturnType<typeof getUsuarioLocal>>(null)
   const [evento, setEvento] = useState<Evento | null>(null)
   const [parcelas, setParcelas] = useState<Parcela[]>([])
-  const [galeria, setGaleria] = useState<MidiaItem[]>([])
   const [loadingEvento, setLoadingEvento] = useState(true)
   const [loadingParcelas, setLoadingParcelas] = useState(true)
   const [pullY, setPullY] = useState(0)
@@ -40,8 +38,6 @@ export default function MenuPage() {
       setEventosInscritos(inscricoes.map((i: any) => i.eventoId))
     }
     setLoadingParcelas(false)
-
-    listarGaleria().then(r => { if (r.ok && r.data) setGaleria(r.data as MidiaItem[]) })
   }, [])
 
   useEffect(() => {
@@ -236,12 +232,6 @@ Se inscreve por aqui: ${link}`
               </div>
             )}
           </div>
-        </div>
-
-        {/* Momentos inesquecíveis */}
-        <div style={{ marginTop: 28 }}>
-          <h2 className="section-title">Momentos inesquecíveis 📷</h2>
-          <GaleriaCarousel itens={galeria} />
         </div>
 
         {/* Ações rápidas para Líder foram movidas para o menu lateral (ícone ☰) */}
