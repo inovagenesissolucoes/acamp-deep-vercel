@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
-import VideoChamada from '@/components/VideoChamada'
 import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
 import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
 import { getEventoAtivo, getMinhasInscricoes, listarGaleria, logout } from '@/lib/api'
@@ -161,14 +160,7 @@ export default function MenuPage() {
                 </p>
               </div>
             ) : (
-              <>
-                <EventoCard evento={evento} inscrito={eventosInscritos.includes(evento.id)} />
-                {evento.videoUrl && (
-                  <div style={{ margin: '14px 16px 0' }}>
-                    <VideoChamada url={evento.videoUrl} titulo={`Chamada — ${evento.nome}`} />
-                  </div>
-                )}
-              </>
+              <EventoCard evento={evento} inscrito={eventosInscritos.includes(evento.id)} />
             )
           ) : (
             <div style={{ margin: '0 16px', background: 'white', borderRadius: 14, padding: 20, textAlign: 'center' }}>

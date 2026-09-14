@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation'
 import { Calendar, Clock, DollarSign, Check } from 'lucide-react'
 import Countdown from './Countdown'
+import VideoChamada from './VideoChamada'
 
 export interface Evento {
   id: string
@@ -60,7 +61,7 @@ export default function EventoCard({ evento, inscrito, onClick }: { evento: Even
             <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'white', letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {evento.nome}
             </p>
-            <p style={{ margin: '2px 0 0', fontSize: 11.5, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <p style={{ margin: '2px 0 0', fontSize: 11.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.3 }}>
               Um encontro com Deus vem aí.
             </p>
           </div>
@@ -75,22 +76,22 @@ export default function EventoCard({ evento, inscrito, onClick }: { evento: Even
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.15)', margin: '14px 0' }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
-          <button
-            onClick={handleInscricao}
-            disabled={inscrito}
-            style={{
-              flexShrink: 0, border: 'none', cursor: inscrito ? 'default' : 'pointer',
-              padding: '9px 14px', borderRadius: 10, fontSize: 12.5, fontWeight: 700,
-              display: 'flex', alignItems: 'center', gap: 5,
-              background: inscrito ? 'rgba(255,255,255,0.15)' : 'white',
-              color: inscrito ? 'white' : 'var(--primary)',
-            }}
-          >
-            {inscrito ? (<><Check size={14} /> Inscrito</>) : 'Inscreva-se'}
-          </button>
         </div>
+        <button
+          onClick={handleInscricao}
+          disabled={inscrito}
+          style={{
+            width: '100%', border: 'none', cursor: inscrito ? 'default' : 'pointer',
+            padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            background: inscrito ? 'rgba(255,255,255,0.15)' : 'white',
+            color: inscrito ? 'white' : 'var(--primary)',
+          }}
+        >
+          {inscrito ? (<><Check size={14} /> Inscrito</>) : 'Inscreva-se'}
+        </button>
       </div>
 
       {/* Detalhes */}
@@ -112,6 +113,12 @@ export default function EventoCard({ evento, inscrito, onClick }: { evento: Even
           </span>
         </div>
       </div>
+
+      {evento.videoUrl && (
+        <div style={{ marginTop: 14 }} onClick={e => e.stopPropagation()}>
+          <VideoChamada url={evento.videoUrl} titulo={`Chamada — ${evento.nome}`} />
+        </div>
+      )}
     </div>
   )
 }
