@@ -83,52 +83,52 @@ export default function MenuPage() {
       {/* HEADER AZUL */}
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
-        borderBottomLeftRadius: 28,
-        borderBottomRightRadius: 28,
-        padding: `calc(env(safe-area-inset-top, 0px) + 20px) 20px 28px`,
+        borderBottomLeftRadius: 24,
+        borderBottomRightRadius: 24,
+        padding: `calc(env(safe-area-inset-top, 0px) + 14px) 20px 18px`,
         position: 'relative',
         overflow: 'hidden',
       }}>
         {/* Blobs */}
-        <div style={{ position: 'absolute', width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', top: -60, right: -50, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', bottom: -30, left: -20, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.07)', top: -60, right: -50, pointerEvents: 'none' }} />
 
         {/* Barra topo */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+              background: 'rgba(255,255,255,0.22)', border: '1.5px solid rgba(255,255,255,0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 15, color: 'white' }}>
+                {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
+              </span>
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <p style={{
+                fontFamily: 'Poppins', fontSize: 17, fontWeight: 700, color: 'white',
+                margin: 0, letterSpacing: '-0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                {usuario?.nome || 'Usuário'} {usuario?.sobrenome || ''}
+              </p>
+              <p style={{
+                fontFamily: 'Poppins', fontSize: 12, color: 'rgba(255,255,255,0.8)', margin: '2px 0 0',
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>
+                {usuario?.email}
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             {lider && (
-              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <button onClick={() => setMenuAberto(true)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Menu size={18} />
               </button>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-                background: 'rgba(255,255,255,0.22)', border: '1.5px solid rgba(255,255,255,0.45)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 15, color: 'white' }}>
-                  {(usuario?.nome?.[0] || '') + (usuario?.sobrenome?.[0] || '')}
-                </span>
-              </div>
-              <div>
-                <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', fontWeight: 400 }}>
-                  Seja Bem-Vindo
-                </p>
-                <p style={{
-                  fontFamily: 'Poppins', fontSize: 22, fontWeight: 700,
-                  margin: 0, letterSpacing: '-0.02em',
-                  background: 'linear-gradient(90deg, #fff 0%, #c5ccff 100%)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                }}>
-                  {usuario?.nome || 'Usuário'} ✨
-                </p>
-              </div>
-            </div>
+            <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <LogOut size={18} />
+            </button>
           </div>
-          <button onClick={handleLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <LogOut size={18} />
-          </button>
         </div>
       </div>
 
