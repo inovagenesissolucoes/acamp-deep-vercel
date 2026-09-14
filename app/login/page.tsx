@@ -94,7 +94,7 @@ function LoginPageContent() {
           fontFamily: 'Poppins, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.75)',
           textAlign: 'center', margin: '0 0 18px', position: 'relative', zIndex: 1,
         }}>
-          Inscrições abertas para o próximo acampamento ✨
+          {evento ? `Inscrições abertas para ${evento.nome} ✨` : 'Inscrições abertas para o próximo acampamento ✨'}
         </p>
 
         {evento && (
@@ -104,7 +104,7 @@ function LoginPageContent() {
               textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em',
               margin: '0 0 10px',
             }}>
-              Faltam para o {evento.nome}
+              Contagem regressiva
             </p>
             <Countdown dataAlvo={evento.dataFim} />
           </div>
