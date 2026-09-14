@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight } from 'lucide-react'
+import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight, Share2 } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import type { Parcela } from '@/components/ParcelaCard'
 import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
@@ -80,6 +80,21 @@ export default function MenuPage() {
   const irPara = (href: string) => {
     setMenuAberto(false)
     router.push(href)
+  }
+
+  const compartilhar = () => {
+    setMenuAberto(false)
+    if (navigator.vibrate) navigator.vibrate(10)
+    const nomeEvento = evento?.nome || 'Acamp Deep'
+    const link = typeof window !== 'undefined' ? window.location.origin : ''
+    const mensagem = `🏕️✨ Bora comigo pro ${nomeEvento}?
+
+Já pensou num final de semana longe da correria, mais perto de Deus, cercado de gente boa, muita risada e comida de dar água na boca? 😄🙌
+
+Vai ter louvor, palavra que transforma e momentos que a gente carrega pra vida inteira. Não fica de fora dessa!
+
+Se inscreve por aqui: ${link}`
+    window.location.href = `https://wa.me/?text=${encodeURIComponent(mensagem)}`
   }
 
   return (
@@ -305,6 +320,27 @@ export default function MenuPage() {
 
         {/* Itens do menu */}
         <div style={{ padding: '18px 14px', display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+          <button
+            onClick={compartilhar}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '12px', borderRadius: 14, border: 'none',
+              background: 'white', cursor: 'pointer', textAlign: 'left',
+              fontFamily: 'Poppins', fontSize: 14, fontWeight: 600,
+              color: 'var(--text-main)', boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+              marginBottom: lider ? 10 : 0,
+            }}
+          >
+            <span style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: '#25D366',
+              color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Share2 size={17} />
+            </span>
+            Compartilhar convite
+          </button>
+
           {lider && (
             <>
               <span style={{ fontFamily: 'Poppins', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', letterSpacing: 0.4, padding: '0 10px 6px' }}>
