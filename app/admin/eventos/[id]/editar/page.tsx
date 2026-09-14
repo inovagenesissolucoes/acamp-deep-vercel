@@ -36,7 +36,7 @@ export default function EditarEventoPage() {
     setLoading(true)
     await editarEvento(form)
     setLoading(false)
-    router.push(`/evento/${id}`)
+    router.push('/menu')
   }
 
   if (carregando) return <main style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="skeleton" style={{ width: 200, height: 40 }} /></main>
