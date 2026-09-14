@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight, Share2 } from 'lucide-react'
+import { User, HelpCircle, BookOpen, LogOut, Menu, X, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight, Share2 } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import type { Parcela } from '@/components/ParcelaCard'
 import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
@@ -71,7 +71,6 @@ export default function MenuPage() {
   ]
 
   const itensLider = [
-    { label: 'Inscritos', icon: <ClipboardList size={20} />, href: '/admin/inscricoes' },
     { label: 'Cadastrados', icon: <Users size={20} />, href: '/admin/cadastrados' },
     { label: 'Eventos', icon: <Tent size={20} />, href: '/admin/eventos' },
     { label: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/admin/dashboard' },

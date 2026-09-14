@@ -45,7 +45,7 @@ export default function DetalheInscricaoPage() {
   }, [id, router])
 
   const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-  const fmtData = (d: string) => d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
+  const fmtData = (d: string) => d ? new Date(d).toLocaleDateString('pt-BR') : '—'
 
   const whatsapp = (tel: string) => {
     const limpo = tel.replace(/\D/g, '')
