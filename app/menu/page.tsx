@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home } from 'lucide-react'
+import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard, Home, CreditCard, ChevronRight } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
-import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
+import type { Parcela } from '@/components/ParcelaCard'
 import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
 import { getEventoAtivo, getMinhasInscricoes, listarGaleria, logout } from '@/lib/api'
 import { getUsuarioLocal, isLider, limparSessao } from '@/lib/auth'
@@ -58,6 +58,10 @@ export default function MenuPage() {
   }
 
   const lider = isLider(usuario)
+
+  const proximaParcela = parcelas
+    .filter(p => p.status !== 'Pago')
+    .sort((a, b) => new Date(a.vencimento).getTime() - new Date(b.vencimento).getTime())[0]
 
   const icones = [
     { label: 'Início', icon: <Home size={22} />, href: '/menu' },
@@ -160,16 +164,50 @@ export default function MenuPage() {
 
         {/* Minhas Parcelas */}
         <div style={{ marginTop: 28 }}>
-          <h2 className="section-title">Minhas Parcelas</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', marginBottom: 10 }}>
+            <h2 className="section-title" style={{ padding: 0, margin: 0 }}>Minhas parcelas</h2>
+            <button
+              onClick={() => router.push('/parcelas')}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2, fontFamily: 'Poppins', fontSize: 13, fontWeight: 600, color: 'var(--primary)', padding: 0 }}
+            >
+              Ver todas <ChevronRight size={15} />
+            </button>
+          </div>
           <div style={{ padding: '0 16px' }}>
             {loadingParcelas ? (
-              [1, 2].map(i => (
-                <div key={i} style={{ marginBottom: 10 }}>
-                  <div className="skeleton" style={{ height: 76 }} />
+              <div className="skeleton" style={{ height: 76 }} />
+            ) : proximaParcela ? (
+              <div
+                className="card-solid"
+                style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
+                onClick={() => router.push(`/pagamento/${proximaParcela.id}`)}
+              >
+                <div style={{
+                  width: 46, height: 46, borderRadius: '50%', flexShrink: 0,
+                  background: 'rgba(91,111,232,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <CreditCard size={20} color="var(--primary)" />
                 </div>
-              ))
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: '0 0 2px' }}>
+                    Próxima parcela
+                  </p>
+                  <p style={{ fontFamily: 'Poppins', fontSize: 19, fontWeight: 700, color: 'var(--text-main)', margin: '0 0 2px', letterSpacing: '-0.01em' }}>
+                    {proximaParcela.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                  <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>
+                    Vencimento em {new Date(proximaParcela.vencimento).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+                <ChevronRight size={20} color="var(--text-muted)" style={{ flexShrink: 0 }} />
+              </div>
             ) : parcelas.length > 0 ? (
-              parcelas.map(p => <ParcelaCard key={p.id} parcela={p} />)
+              <div className="card-solid" style={{ textAlign: 'center' }}>
+                <span style={{ fontSize: 28 }}>🎉</span>
+                <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)', margin: '8px 0 0' }}>
+                  Todas as parcelas estão pagas!
+                </p>
+              </div>
             ) : (
               <div style={{ background: 'white', borderRadius: 14, padding: 20, textAlign: 'center' }}>
                 <span style={{ fontSize: 28 }}>💳</span>

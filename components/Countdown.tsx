@@ -33,9 +33,9 @@ function Digito({ valor, label, compacto }: { valor: number; label: string; comp
     }
   }, [valor, prev])
 
-  const boxSize = compacto ? 38 : 64
-  const fontSize = compacto ? 15 : 28
-  const labelSize = compacto ? 7.5 : 11
+  const boxSize = compacto ? 46 : 64
+  const fontSize = compacto ? 19 : 28
+  const labelSize = compacto ? 8.5 : 11
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: compacto ? 2 : 4 }}>

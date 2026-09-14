@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { Calendar, Clock, DollarSign, Check } from 'lucide-react'
+import { Calendar, Clock, DollarSign } from 'lucide-react'
 import Countdown from './Countdown'
 import VideoChamada from './VideoChamada'
 
@@ -65,33 +65,30 @@ export default function EventoCard({ evento, inscrito, onClick }: { evento: Even
               Um encontro com Deus vem aí.
             </p>
           </div>
-          <span style={{
-            flexShrink: 0, fontSize: 10.5, fontWeight: 600, color: 'white',
-            background: 'rgba(255,255,255,0.18)', padding: '4px 9px', borderRadius: 999,
-            whiteSpace: 'nowrap',
-          }}>
-            {evento.status === 'aberto' ? '🟢 Abertas' : evento.status === 'concluido' ? '✅ Concluído' : '🔴 Encerrado'}
-          </span>
+          <button
+            onClick={evento.status === 'aberto' && !inscrito ? handleInscricao : (e) => e.stopPropagation()}
+            disabled={inscrito || evento.status !== 'aberto'}
+            style={{
+              flexShrink: 0, fontSize: 11.5, fontWeight: 700, whiteSpace: 'nowrap',
+              border: 'none', borderRadius: 999, padding: '6px 12px',
+              cursor: (inscrito || evento.status !== 'aberto') ? 'default' : 'pointer',
+              background: inscrito ? 'white' : 'rgba(255,255,255,0.18)',
+              color: inscrito ? '#059669' : 'white',
+            }}
+          >
+            {inscrito
+              ? '✓ Inscrito'
+              : evento.status === 'aberto' ? 'Inscreva-se'
+              : evento.status === 'concluido' ? '✅ Concluído'
+              : '🔴 Encerrado'}
+          </button>
         </div>
 
         <div style={{ height: 1, background: 'rgba(255,255,255,0.15)', margin: '14px 0' }} />
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
         </div>
-        <button
-          onClick={handleInscricao}
-          disabled={inscrito}
-          style={{
-            width: '100%', border: 'none', cursor: inscrito ? 'default' : 'pointer',
-            padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 700,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            background: inscrito ? 'rgba(255,255,255,0.15)' : 'white',
-            color: inscrito ? 'white' : 'var(--primary)',
-          }}
-        >
-          {inscrito ? (<><Check size={14} /> Inscrito</>) : 'Inscreva-se'}
-        </button>
       </div>
 
       {/* Detalhes */}
