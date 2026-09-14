@@ -3,8 +3,16 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
 import { getUsuario, editarUsuario } from '@/lib/api'
-import { getUsuarioLocal, isLider } from '@/lib/auth'
+import { getUsuarioLocal, isLider, calcularIdade } from '@/lib/auth'
 import { Edit2, Save } from 'lucide-react'
+
+function faixaEtaria(idade: number): string {
+  if (idade < 15) return '< 15 anos'
+  if (idade < 18) return '15-17 anos'
+  if (idade < 25) return '18-24 anos'
+  if (idade < 36) return '25-35 anos'
+  return '> 35 anos'
+}
 
 export default function DetalheUsuarioPage() {
   const params = useParams()
@@ -68,6 +76,38 @@ export default function DetalheUsuarioPage() {
               )}
             </div>
           ))}
+
+          {/* Idade e faixa etária (calculados, não editáveis aqui) */}
+          {dados.dataNascimento && (
+            <>
+              <div style={{ padding: '10px 0', borderBottom: '1px solid #F5F5F5' }}>
+                <p style={{ fontFamily: 'Poppins', fontSize: 11, color: 'var(--text-muted)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Idade</p>
+                <p style={{ fontFamily: 'Poppins', fontSize: 15, fontWeight: 600, color: 'var(--text-main)', margin: 0 }}>
+                  {calcularIdade(dados.dataNascimento)} anos
+                </p>
+              </div>
+              <div style={{ padding: '10px 0', borderBottom: '1px solid #F5F5F5' }}>
+                <p style={{ fontFamily: 'Poppins', fontSize: 11, color: 'var(--text-muted)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Faixa Etária</p>
+                <p style={{ fontFamily: 'Poppins', fontSize: 15, fontWeight: 600, color: 'var(--text-main)', margin: 0 }}>
+                  {faixaEtaria(calcularIdade(dados.dataNascimento))}
+                </p>
+              </div>
+            </>
+          )}
+
+          {/* Membro Deep / Membro Igreja */}
+          <div style={{ padding: '10px 0', borderBottom: '1px solid #F5F5F5' }}>
+            <p style={{ fontFamily: 'Poppins', fontSize: 11, color: 'var(--text-muted)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Membro Deep</p>
+            <p style={{ fontFamily: 'Poppins', fontSize: 15, fontWeight: 600, color: dados.membroDeep ? '#059669' : 'var(--text-muted)', margin: 0 }}>
+              {dados.membroDeep ? '✅ Sim' : '— Não'}
+            </p>
+          </div>
+          <div style={{ padding: '10px 0' }}>
+            <p style={{ fontFamily: 'Poppins', fontSize: 11, color: 'var(--text-muted)', margin: '0 0 3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Membro da Igreja</p>
+            <p style={{ fontFamily: 'Poppins', fontSize: 15, fontWeight: 600, color: dados.membroIgreja ? '#059669' : 'var(--text-muted)', margin: 0 }}>
+              {dados.membroIgreja ? '✅ Sim' : '— Não'}
+            </p>
+          </div>
         </div>
         {editando && (
           <div style={{ display: 'flex', gap: 12 }}>

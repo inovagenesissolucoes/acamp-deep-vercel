@@ -3,18 +3,15 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
 import { cadastrar } from '@/lib/api'
-import { getUsuarioLocal, isLider } from '@/lib/auth'
 import { Eye, EyeOff } from 'lucide-react'
 
 export default function CadastroPage() {
   const router = useRouter()
-  const usuarioLogado = typeof window !== 'undefined' ? getUsuarioLocal() : null
-  const podeSerLider = isLider(usuarioLogado)
 
   const [form, setForm] = useState({
     nome: '', sobrenome: '', dataNascimento: '',
     telefone: '', email: '', senha: '', confirmarSenha: '',
-    membroDeep: '', membroIgreja: '', acesso: 'Jovem',
+    membroDeep: '', membroIgreja: '', acesso: 'Jovem', codigoLider: '',
   })
   const [verSenha, setVerSenha] = useState(false)
   const [verConfirma, setVerConfirma] = useState(false)
@@ -31,7 +28,7 @@ export default function CadastroPage() {
     if (form.senha !== form.confirmarSenha) return 'As senhas não coincidem.'
     if (form.senha.length < 6) return 'A senha deve ter pelo menos 6 caracteres.'
     if (!form.membroDeep || !form.membroIgreja) return 'Selecione as opções de membro.'
-    if (form.acesso === 'Lider' && !podeSerLider) return 'Somente um líder pode cadastrar outro líder.'
+    if (form.acesso === 'Lider' && form.codigoLider.trim() !== 'Deep2019') return 'Código de líder inválido.'
     return ''
   }
 
@@ -159,14 +156,18 @@ export default function CadastroPage() {
             </select>
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
-            <label className="input-label">
-              Acesso * {!podeSerLider && <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(Líder somente por outro Líder)</span>}
-            </label>
+            <label className="input-label">Acesso *</label>
             <select className="input-field" value={form.acesso} onChange={set('acesso')}>
               <option value="Jovem">Jovem</option>
-              {podeSerLider && <option value="Lider">Líder</option>}
+              <option value="Lider">Líder</option>
             </select>
           </div>
+          {form.acesso === 'Lider' && (
+            <div className="input-group" style={{ marginTop: 14, marginBottom: 0 }}>
+              <label className="input-label">Código de Líder *</label>
+              <input className="input-field" type="text" placeholder="Peça ao seu líder" value={form.codigoLider} onChange={set('codigoLider')} />
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', gap: 12 }}>
