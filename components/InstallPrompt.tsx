@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { Download, X, Share } from 'lucide-react'
 
+const CHAVE_DISPENSADO = 'acamp_install_dispensado'
+
 function estaInstalado(): boolean {
   if (typeof window === 'undefined') return false
   const standalone = window.matchMedia('(display-mode: standalone)').matches
@@ -14,13 +16,17 @@ function ehIOS(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent) && !(window as any).MSStream
 }
 
+function jaFoiDispensado(): boolean {
+  try { return localStorage.getItem(CHAVE_DISPENSADO) === '1' } catch { return false }
+}
+
 export default function InstallPrompt() {
   const [promptEvent, setPromptEvent] = useState<any>(null)
   const [mostrarIOS, setMostrarIOS] = useState(false)
   const [fechado, setFechado] = useState(false)
 
   useEffect(() => {
-    if (estaInstalado()) return
+    if (estaInstalado() || jaFoiDispensado()) return
 
     if (ehIOS()) {
       setMostrarIOS(true)
@@ -35,6 +41,11 @@ export default function InstallPrompt() {
     return () => window.removeEventListener('beforeinstallprompt', handler)
   }, [])
 
+  const dispensar = () => {
+    setFechado(true)
+    try { localStorage.setItem(CHAVE_DISPENSADO, '1') } catch {}
+  }
+
   if (fechado) return null
   if (!promptEvent && !mostrarIOS) return null
 
@@ -43,6 +54,7 @@ export default function InstallPrompt() {
     promptEvent.prompt()
     await promptEvent.userChoice
     setPromptEvent(null)
+    try { localStorage.setItem(CHAVE_DISPENSADO, '1') } catch {}
   }
 
   return (
@@ -91,7 +103,7 @@ export default function InstallPrompt() {
       )}
 
       <button
-        onClick={() => setFechado(true)}
+        onClick={dispensar}
         style={{
           flexShrink: 0, width: 28, height: 28, borderRadius: '50%',
           background: '#F0F1FB', border: 'none', cursor: 'pointer',

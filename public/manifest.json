@@ -4,6 +4,7 @@
   "description": "App de inscrição e gestão de acampamentos da igreja Deep",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#FFFFFF",
   "theme_color": "#5B6FE8",
   "orientation": "portrait",
