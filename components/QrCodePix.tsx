@@ -51,7 +51,6 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     const merchantName = 'ACAMP DEEP'
     const merchantCity = 'SAO PAULO'
     const txid = 'ACAMPDEEP' + Date.now().toString().slice(-5)
-    const descricao_enc = desc ? desc.slice(0, 25) : 'Parcela Acampamento'
 
     function tlv(id: string, value: string) {
       const len = value.length.toString().padStart(2, '0')
@@ -60,8 +59,7 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
 
     const gui = tlv('00', 'br.gov.bcb.pix')
     const pixKey = tlv('01', chaveLimpa)
-    const adicional = tlv('02', descricao_enc)
-    const merchantAccount = tlv('26', gui + pixKey + adicional)
+    const merchantAccount = tlv('26', gui + pixKey)
 
     const amount = tlv('54', valorStr)
     const payload =
