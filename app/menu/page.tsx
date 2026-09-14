@@ -196,7 +196,7 @@ export default function MenuPage() {
                     {proximaParcela.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                   <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>
-                    Vencimento em {new Date(proximaParcela.vencimento).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    Vencimento em {new Date(proximaParcela.vencimento).toLocaleDateString('pt-BR')}
                   </p>
                 </div>
                 <ChevronRight size={20} color="var(--text-muted)" style={{ flexShrink: 0 }} />
