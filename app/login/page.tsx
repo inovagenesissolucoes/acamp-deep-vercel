@@ -54,13 +54,15 @@ function LoginPageContent() {
       {/* ÁREA AZUL */}
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
-        paddingTop: 'env(safe-area-inset-top, 20px)',
         minHeight: 240,
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        padding: '24px 20px',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)',
         flexShrink: 0,
         borderBottomLeftRadius: 32,
         borderBottomRightRadius: 32,
