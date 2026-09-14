@@ -1,92 +1,115 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
-import { getEvento, editarEvento, setEventoAtivo } from '@/lib/api'
+import { getEvento } from '@/lib/api'
 import { getUsuarioLocal, isLider } from '@/lib/auth'
+import { Calendar, Clock, DollarSign, AlertCircle, Edit } from 'lucide-react'
+import type { Evento } from '@/components/EventoCard'
 
-export default function EditarEventoPage() {
+export default function EventoDetalhe() {
   const params = useParams()
   const router = useRouter()
   const id = params?.id as string
-  const [form, setForm] = useState<any>({})
-  const [loading, setLoading] = useState(false)
-  const [carregando, setCarregando] = useState(true)
+  const [evento, setEvento] = useState<Evento | null>(null)
+  const [loading, setLoading] = useState(true)
+  const usuario = typeof window !== 'undefined' ? getUsuarioLocal() : null
+  const lider = isLider(usuario)
 
   useEffect(() => {
-    const u = getUsuarioLocal()
-    if (!u || !isLider(u)) { router.replace('/menu'); return }
+    if (!id) return
     getEvento(id).then(r => {
-      if (r.ok && r.data) {
-        const ev: any = { ...r.data }
-        // Normaliza datas para AAAA-MM-DD (o backend pode retornar ISO completo)
-        ;['dataInicio', 'dataFim', 'dataLimite'].forEach(campo => {
-          if (ev[campo]) ev[campo] = String(ev[campo]).slice(0, 10)
-        })
-        setForm(ev)
-      }
-      setCarregando(false)
+      if (r.ok && r.data) setEvento(r.data as Evento)
+      setLoading(false)
     })
-  }, [id, router])
+  }, [id])
 
-  const set = (campo: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setForm((f: any) => ({ ...f, [campo]: e.target.value }))
+  function fmt(iso: string) { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) }
 
-  const handleSalvar = async () => {
-    setLoading(true)
-    await editarEvento(form)
-    setLoading(false)
-    router.push(`/evento/${id}`)
-  }
-
-  if (carregando) return <main style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div className="skeleton" style={{ width: 200, height: 40 }} /></main>
+  const acao = lider ? (
+    <button onClick={() => router.push(`/admin/eventos/${id}/editar`)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white' }}>
+      <Edit size={20} />
+    </button>
+  ) : undefined
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Editar Evento" />
+      <HeaderInterno titulo="Detalhe do Evento" direita={acao} />
+
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px', paddingBottom: 32 }}>
-        <div className="card-solid" style={{ marginBottom: 14 }}>
-          {[
-            { label: 'Nome do Evento', campo: 'nome', type: 'text', placeholder: 'Ex.: Acamp 2025' },
-            { label: 'Data de Início', campo: 'dataInicio', type: 'date' },
-            { label: 'Data de Fim', campo: 'dataFim', type: 'date' },
-            { label: 'Horário', campo: 'horario', type: 'text', placeholder: 'Ex.: 18 Hrs' },
-            { label: 'Data Limite', campo: 'dataLimite', type: 'date' },
-            { label: 'Valor (R$)', campo: 'valor', type: 'number' },
-            { label: 'Chave PIX', campo: 'chavePix', type: 'text' },
-            { label: 'Senha de Exceção (opcional)', campo: 'senhaExcecao', type: 'text', placeholder: 'Libera inscrição após o prazo' },
-          ].map(({ label, campo, type, placeholder }) => (
-            <div key={campo} className="input-group">
-              <label className="input-label">{label}</label>
-              <input className="input-field" type={type} placeholder={placeholder} value={form[campo] || ''} onChange={set(campo)} />
+        {loading ? (
+          [1, 2, 3].map(i => <div key={i} className="skeleton" style={{ height: 80, marginBottom: 12 }} />)
+        ) : evento ? (
+          <>
+            {/* Banner */}
+            <div style={{
+              background: 'linear-gradient(135deg, #5B6FE8 0%, #9BB0FF 100%)',
+              borderRadius: 16, padding: '20px 20px', marginBottom: 20,
+              display: 'flex', alignItems: 'center', gap: 14,
+            }}>
+              <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(255,255,255,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>
+                🏕️
+              </div>
+              <div>
+                <h2 style={{ fontFamily: 'Poppins', fontWeight: 700, fontSize: 18, color: 'white', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+                  {evento.nome}
+                </h2>
+                <span style={{ fontFamily: 'Poppins', fontSize: 12, color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.2)', padding: '3px 10px', borderRadius: 20 }}>
+                  {evento.status === 'aberto' ? '🟢 Inscrições Abertas' : '🔴 Encerrado'}
+                </span>
+              </div>
             </div>
-          ))}
-          <div className="input-group">
-            <label className="input-label">Status</label>
-            <select className="input-field" value={form.status || 'aberto'} onChange={set('status')}>
-              <option value="aberto">Aberto</option>
-              <option value="fechado">Fechado</option>
-            </select>
-          </div>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label className="input-label">Recomendações</label>
-            <textarea className="input-field" value={form.recomendacoes || ''} onChange={set('recomendacoes')} rows={3} style={{ resize: 'none' }} />
-          </div>
-        </div>
 
-        <button className="btn-outline btn-full" style={{ marginBottom: 10 }} onClick={async () => {
-          await setEventoAtivo(id)
-          alert('Evento definido como ativo!')
-        }}>
-          ⭐ Definir como Evento Ativo
-        </button>
+            {/* Infos */}
+            <div className="card-solid" style={{ marginBottom: 14 }}>
+              {[
+                { icon: <Calendar size={16} color="var(--primary)" />, label: 'Início', val: fmt(evento.dataInicio) },
+                { icon: <Calendar size={16} color="var(--primary)" />, label: 'Fim', val: fmt(evento.dataFim) },
+                { icon: <Clock size={16} color="var(--primary)" />, label: 'Horário', val: evento.horario },
+                { icon: <Calendar size={16} color="var(--primary)" />, label: 'Limite de pagamento', val: fmt(evento.dataLimite) },
+                { icon: <DollarSign size={16} color="var(--primary)" />, label: 'Investimento', val: evento.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) },
+              ].map(item => (
+                <div key={item.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #F0F0F0' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {item.icon}
+                    <span style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)' }}>{item.label}</span>
+                  </div>
+                  <span style={{ fontFamily: 'Poppins', fontSize: 13, fontWeight: 600, color: 'var(--text-main)' }}>{item.val}</span>
+                </div>
+              ))}
+            </div>
 
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn-outline" style={{ flex: 1 }} onClick={() => router.back()}>Cancelar</button>
-          <button className="btn-primary" style={{ flex: 1 }} onClick={handleSalvar} disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
-        </div>
+            {/* Recomendações */}
+            {evento.recomendacoes && (
+              <div className="card-solid" style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                  <AlertCircle size={16} color="var(--primary)" />
+                  <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: 0 }}>Recomendações</p>
+                </div>
+                <p style={{ fontFamily: 'Poppins', fontSize: 13, color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
+                  {evento.recomendacoes}
+                </p>
+              </div>
+            )}
+
+            {/* CTA */}
+            {evento.status === 'aberto' && (
+              <button
+                className="btn-primary btn-full"
+                onClick={() => {
+                  if (navigator.vibrate) navigator.vibrate(10)
+                  router.push(`/inscricao/${evento.id}`)
+                }}
+              >
+                🏕️ Quero me inscrever!
+              </button>
+            )}
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <p style={{ fontFamily: 'Poppins', color: 'var(--text-muted)' }}>Evento não encontrado.</p>
+          </div>
+        )}
       </div>
     </main>
   )
