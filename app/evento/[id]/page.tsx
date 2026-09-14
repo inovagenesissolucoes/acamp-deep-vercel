@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
-import { getEvento } from '@/lib/api'
+import { getEvento, getMinhasInscricoes } from '@/lib/api'
 import { getUsuarioLocal, isLider } from '@/lib/auth'
-import { Calendar, Clock, DollarSign, AlertCircle, Edit } from 'lucide-react'
+import { Calendar, Clock, DollarSign, AlertCircle, Edit, Check } from 'lucide-react'
 import type { Evento } from '@/components/EventoCard'
 
 export default function EventoDetalhe() {
@@ -12,14 +12,19 @@ export default function EventoDetalhe() {
   const router = useRouter()
   const id = params?.id as string
   const [evento, setEvento] = useState<Evento | null>(null)
+  const [inscrito, setInscrito] = useState(false)
   const [loading, setLoading] = useState(true)
   const usuario = typeof window !== 'undefined' ? getUsuarioLocal() : null
   const lider = isLider(usuario)
 
   useEffect(() => {
     if (!id) return
-    getEvento(id).then(r => {
-      if (r.ok && r.data) setEvento(r.data as Evento)
+    Promise.all([getEvento(id), getMinhasInscricoes()]).then(([evR, insR]) => {
+      if (evR.ok && evR.data) setEvento(evR.data as Evento)
+      if (insR.ok && insR.data) {
+        const jaInscrito = (insR.data as any[]).some(i => i.eventoId === id)
+        setInscrito(jaInscrito)
+      }
       setLoading(false)
     })
   }, [id])
@@ -94,15 +99,26 @@ export default function EventoDetalhe() {
 
             {/* CTA */}
             {evento.status !== 'concluido' && (
-              <button
-                className="btn-primary btn-full"
-                onClick={() => {
-                  if (navigator.vibrate) navigator.vibrate(10)
-                  router.push(`/inscricao/${evento.id}`)
-                }}
-              >
-                🏕️ Quero me inscrever!
-              </button>
+              inscrito ? (
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)',
+                  borderRadius: 12, padding: '14px', color: '#059669',
+                  fontFamily: 'Poppins', fontWeight: 600, fontSize: 14,
+                }}>
+                  <Check size={18} /> Você já está inscrito neste evento
+                </div>
+              ) : (
+                <button
+                  className="btn-primary btn-full"
+                  onClick={() => {
+                    if (navigator.vibrate) navigator.vibrate(10)
+                    router.push(`/inscricao/${evento.id}`)
+                  }}
+                >
+                  🏕️ Quero me inscrever!
+                </button>
+              )
             )}
           </>
         ) : (

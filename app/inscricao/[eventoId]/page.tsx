@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import HeaderInterno from '@/components/HeaderInterno'
-import { getEvento, inscrever } from '@/lib/api'
+import { getEvento, getMinhasInscricoes, inscrever } from '@/lib/api'
 import { getUsuarioLocal, calcularIdade } from '@/lib/auth'
 import { Minus, Plus, Calendar, DollarSign, Clock, Info, Lock } from 'lucide-react'
 import type { Evento } from '@/components/EventoCard'
@@ -46,6 +46,7 @@ export default function InscricaoPage() {
   const [erro, setErro] = useState('')
   const [loadingEvento, setLoadingEvento] = useState(true)
   const [sucesso, setSucesso] = useState(false)
+  const [jaInscrito, setJaInscrito] = useState(false)
 
   const usuario = typeof window !== 'undefined' ? getUsuarioLocal() : null
   const idadeUsuario = usuario ? calcularIdade(usuario.dataNascimento) : 18
@@ -53,8 +54,11 @@ export default function InscricaoPage() {
 
   useEffect(() => {
     if (!eventoId) return
-    getEvento(eventoId).then(r => {
-      if (r.ok && r.data) setEvento(r.data as Evento)
+    Promise.all([getEvento(eventoId), getMinhasInscricoes()]).then(([evR, insR]) => {
+      if (evR.ok && evR.data) setEvento(evR.data as Evento)
+      if (insR.ok && insR.data) {
+        setJaInscrito((insR.data as any[]).some(i => i.eventoId === eventoId))
+      }
       setLoadingEvento(false)
     })
   }, [eventoId])
@@ -210,8 +214,21 @@ export default function InscricaoPage() {
               )}
             </div>
 
-            {/* Evento concluído: bloqueia por completo, nem senha de exceção resolve */}
-            {concluido ? (
+            {/* Já inscrito: bloqueia por completo */}
+            {jaInscrito ? (
+              <div className="card-solid" style={{ textAlign: 'center', padding: 28 }}>
+                <span style={{ fontSize: 36 }}>✅</span>
+                <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: '10px 0 4px' }}>
+                  Você já está inscrito neste evento
+                </p>
+                <p style={{ fontFamily: 'Poppins', fontSize: 12.5, color: 'var(--text-muted)', margin: 0 }}>
+                  Confira suas parcelas na tela inicial.
+                </p>
+                <button className="btn-outline" style={{ marginTop: 18 }} onClick={() => router.push('/menu')}>
+                  Voltar ao início
+                </button>
+              </div>
+            ) : concluido ? (
               <div className="card-solid" style={{ textAlign: 'center', padding: 28 }}>
                 <span style={{ fontSize: 36 }}>🎉</span>
                 <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 14, color: 'var(--text-main)', margin: '10px 0 4px' }}>
