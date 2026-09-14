@@ -54,59 +54,65 @@ function LoginPageContent() {
       {/* ÁREA AZUL */}
       <div style={{
         background: 'linear-gradient(135deg, #5B6FE8 0%, #7B8FF5 60%, #9BB0FF 100%)',
-        minHeight: 240,
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px 20px',
-        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)',
+        padding: '20px 20px',
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 20px)',
         flexShrink: 0,
-        borderBottomLeftRadius: 32,
-        borderBottomRightRadius: 32,
+        borderBottomLeftRadius: 28,
+        borderBottomRightRadius: 28,
       }}>
         {/* Blobs */}
         <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.1)', top: -80, right: -60 }} />
         <div style={{ position: 'absolute', width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', bottom: -40, left: -30 }} />
-        <div style={{ position: 'absolute', width: 80, height: 80, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', top: 30, left: 20 }} />
+
+        {/* Ajuda */}
+        <button
+          onClick={() => router.push('/ajuda')}
+          style={{
+            position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 14,
+            width: 34, height: 34, borderRadius: '50%', background: 'rgba(255,255,255,0.18)',
+            border: 'none', cursor: 'pointer', color: 'white', zIndex: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <HelpCircle size={17} />
+        </button>
 
         {/* Logo */}
         <div style={{
-          width: 100, height: 100, borderRadius: '50%',
-          background: 'white', boxShadow: '0 8px 40px rgba(0,0,0,0.2)',
+          width: 72, height: 72, borderRadius: '50%',
+          background: 'white', boxShadow: '0 8px 30px rgba(0,0,0,0.18)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 1, position: 'relative', overflow: 'hidden',
           animation: mounted ? 'logo-in 0.7s cubic-bezier(0.34,1.56,0.64,1) both' : 'none',
         }}>
-          <img src="/logo-deep.png" alt="Acamp Deep" width={100} height={100} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src="/logo-deep.png" alt="Acamp Deep" width={72} height={72} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
 
         <h1 style={{
-          fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 22,
-          color: 'white', textAlign: 'center', margin: '14px 0 4px',
+          fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 19,
+          color: 'white', textAlign: 'center', margin: '10px 0 2px',
           letterSpacing: '-0.02em', position: 'relative', zIndex: 1,
         }}>
           Acamp Deep
         </h1>
         <p style={{
-          fontFamily: 'Poppins, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.75)',
-          textAlign: 'center', margin: '0 0 18px', position: 'relative', zIndex: 1,
+          fontFamily: 'Poppins, sans-serif', fontSize: 12.5, color: 'rgba(255,255,255,0.75)',
+          textAlign: 'center', margin: '0 0 14px', position: 'relative', zIndex: 1,
         }}>
           {evento ? `Inscrições abertas para ${evento.nome} ✨` : 'Inscrições abertas para o próximo acampamento ✨'}
         </p>
 
         {evento && (
           <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
-            <p style={{
-              fontFamily: 'Poppins, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.65)',
-              textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em',
-              margin: '0 0 10px',
-            }}>
-              Um encontro com Deus está chegando em
-            </p>
-            <Countdown dataAlvo={evento.dataInicio} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Countdown dataAlvo={evento.dataInicio} tamanho="compacto" />
+            </div>
           </div>
         )}
       </div>
@@ -205,23 +211,6 @@ function LoginPageContent() {
           </button>
         </div>
       </div>
-
-      {/* ÍCONE AJUDA FLUTUANTE */}
-      <button
-        onClick={() => router.push('/ajuda')}
-        style={{
-          position: 'fixed', bottom: 24, right: 20,
-          width: 52, height: 52, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #5B6FE8, #9BB0FF)',
-          border: 'none', cursor: 'pointer', boxShadow: '0 4px 16px rgba(91,111,232,0.4)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'white', transition: 'transform 150ms ease',
-        }}
-        onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.92)' }}
-        onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)' }}
-      >
-        <HelpCircle size={24} />
-      </button>
 
       {/* MODAL RECUPERAR SENHA */}
       {showReset && (
