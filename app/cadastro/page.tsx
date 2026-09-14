@@ -49,6 +49,7 @@ export default function CadastroPage() {
       membroDeep: form.membroDeep === 'Sim',
       membroIgreja: form.membroIgreja === 'Sim',
       acesso: form.acesso as 'Lider' | 'Jovem',
+      codigoLider: form.acesso === 'Lider' ? form.codigoLider.trim() : undefined,
     })
     setLoading(false)
 

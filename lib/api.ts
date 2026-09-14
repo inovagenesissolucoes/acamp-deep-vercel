@@ -44,6 +44,7 @@ export const cadastrar = (dados: {
   nome: string; sobrenome: string; dataNascimento: string;
   telefone: string; email: string; senha: string;
   membroDeep: boolean; membroIgreja: boolean; acesso: 'Lider' | 'Jovem'
+  codigoLider?: string
 }) => rpc('cadastrar', dados)
 
 export const recuperarSenha = (email: string) =>

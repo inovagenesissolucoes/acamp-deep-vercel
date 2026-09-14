@@ -186,20 +186,29 @@ function acaoLogout(token) {
 }
 
 function acaoCadastrar(body, usuarioLogadoId) {
-  const { nome, sobrenome, dataNascimento, telefone, email, senha, membroDeep, membroIgreja, acesso } = body;
+  const { nome, sobrenome, dataNascimento, telefone, email, senha, membroDeep, membroIgreja, acesso, codigoLider } = body;
   if (!nome || !sobrenome || !email || !senha) return { ok: false, erro: 'Dados incompletos.' };
 
-  // Validar acesso Lider
+  // Validar acesso Lider: libera se souber o código, ou se já estiver logado como líder
   if (acesso === 'Lider') {
-    if (!usuarioLogadoId) return { ok: false, erro: 'Somente um líder autenticado pode cadastrar outro líder.' };
-    const lideres = getSheet('usuarios').getDataRange().getValues();
-    const cabecalho = lideres[0];
-    const lider = lideres.slice(1).find(l => {
-      const obj = {};
-      cabecalho.forEach((c, j) => obj[c] = l[j]);
-      return obj.id === usuarioLogadoId && obj.acesso === 'Lider';
-    });
-    if (!lider) return { ok: false, erro: 'Somente um líder pode cadastrar outro líder.' };
+    const CODIGO_LIDER = 'Deep2019';
+    const codigoValido = (codigoLider || '').toString().trim() === CODIGO_LIDER;
+
+    let autenticadoComoLider = false;
+    if (usuarioLogadoId) {
+      const lideres = getSheet('usuarios').getDataRange().getValues();
+      const cabecalho = lideres[0];
+      const lider = lideres.slice(1).find(l => {
+        const obj = {};
+        cabecalho.forEach((c, j) => obj[c] = l[j]);
+        return obj.id === usuarioLogadoId && obj.acesso === 'Lider';
+      });
+      autenticadoComoLider = !!lider;
+    }
+
+    if (!codigoValido && !autenticadoComoLider) {
+      return { ok: false, erro: 'Código de líder inválido.' };
+    }
   }
 
   const sheet = getSheet('usuarios');
