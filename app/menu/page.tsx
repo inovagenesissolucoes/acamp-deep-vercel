@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation'
 import { User, HelpCircle, BookOpen, LogOut, Menu, X, ClipboardList, Users, Tent, LayoutDashboard } from 'lucide-react'
 import EventoCard, { Evento } from '@/components/EventoCard'
 import ParcelaCard, { Parcela } from '@/components/ParcelaCard'
-import { getEventoAtivo, getMinhasInscricoes, logout } from '@/lib/api'
+import GaleriaCarousel, { MidiaItem } from '@/components/GaleriaCarousel'
+import { getEventoAtivo, getMinhasInscricoes, listarGaleria, logout } from '@/lib/api'
 import { getUsuarioLocal, isLider, limparSessao } from '@/lib/auth'
 
 export default function MenuPage() {
@@ -12,6 +13,7 @@ export default function MenuPage() {
   const [usuario, setUsuario] = useState<ReturnType<typeof getUsuarioLocal>>(null)
   const [evento, setEvento] = useState<Evento | null>(null)
   const [parcelas, setParcelas] = useState<Parcela[]>([])
+  const [galeria, setGaleria] = useState<MidiaItem[]>([])
   const [loadingEvento, setLoadingEvento] = useState(true)
   const [loadingParcelas, setLoadingParcelas] = useState(true)
   const [pullY, setPullY] = useState(0)
@@ -36,6 +38,8 @@ export default function MenuPage() {
       setParcelas(todasParcelas)
     }
     setLoadingParcelas(false)
+
+    listarGaleria().then(r => { if (r.ok && r.data) setGaleria(r.data as MidiaItem[]) })
   }, [])
 
   useEffect(() => {
@@ -180,6 +184,12 @@ export default function MenuPage() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Momentos inesquecíveis */}
+        <div style={{ marginTop: 28 }}>
+          <h2 className="section-title">Momentos inesquecíveis 📷</h2>
+          <GaleriaCarousel itens={galeria} />
         </div>
 
         {/* Ações rápidas para Líder foram movidas para o menu lateral (ícone ☰) */}

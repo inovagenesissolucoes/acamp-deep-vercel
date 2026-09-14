@@ -2,8 +2,10 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, HelpCircle } from 'lucide-react'
-import { login } from '@/lib/api'
+import { login, getEventoAtivo } from '@/lib/api'
 import { salvarUsuario } from '@/lib/auth'
+import Countdown from '@/components/Countdown'
+import type { Evento } from '@/components/EventoCard'
 
 function LoginPageContent() {
   const router = useRouter()
@@ -19,8 +21,12 @@ function LoginPageContent() {
   const [showReset, setShowReset] = useState(false)
   const [emailReset, setEmailReset] = useState('')
   const [resetMsg, setResetMsg] = useState('')
+  const [evento, setEvento] = useState<Evento | null>(null)
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    getEventoAtivo().then(r => { if (r.ok && r.data) setEvento(r.data as Evento) })
+  }, [])
 
   const handleLogin = async () => {
     if (!email || !senha) { setErro('Preencha todos os campos.'); return }
@@ -74,6 +80,33 @@ function LoginPageContent() {
         }}>
           <img src="/logo-deep.png" alt="Acamp Deep" width={100} height={100} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
+
+        <h1 style={{
+          fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 22,
+          color: 'white', textAlign: 'center', margin: '14px 0 4px',
+          letterSpacing: '-0.02em', position: 'relative', zIndex: 1,
+        }}>
+          Acamp Deep
+        </h1>
+        <p style={{
+          fontFamily: 'Poppins, sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.75)',
+          textAlign: 'center', margin: '0 0 18px', position: 'relative', zIndex: 1,
+        }}>
+          Inscrições abertas para o próximo acampamento ✨
+        </p>
+
+        {evento && (
+          <div style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+            <p style={{
+              fontFamily: 'Poppins, sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.65)',
+              textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em',
+              margin: '0 0 10px',
+            }}>
+              Faltam para o {evento.nome}
+            </p>
+            <Countdown dataAlvo={evento.dataFim} />
+          </div>
+        )}
       </div>
 
       {/* FORMULÁRIO */}
