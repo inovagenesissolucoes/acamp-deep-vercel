@@ -44,6 +44,7 @@ export default function NovoEventoPage() {
     dataLimite: '', valor: '', status: 'aberto',
     recomendacoes: '', chavePix: '', idadeAutorizacao: '14',
     senhaExcecao: '', tipoChavePix: 'cpf' as 'cpf' | 'cnpj' | 'telefone' | 'email' | 'aleatoria',
+    videoUrl: '',
   })
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
@@ -78,6 +79,7 @@ export default function NovoEventoPage() {
       chavePix: form.chavePix.trim(),
       idadeAutorizacao: parseInt(form.idadeAutorizacao) || 14,
       senhaExcecao: form.senhaExcecao.trim(),
+      videoUrl: form.videoUrl.trim(),
       tipoChavePix: form.tipoChavePix,
     })
     setLoading(false)
@@ -175,6 +177,10 @@ export default function NovoEventoPage() {
             <p style={{ fontFamily: 'Poppins', fontSize: 11.5, color: 'var(--text-muted)', margin: '6px 0 0' }}>
               Se definida, quem souber essa senha pode se inscrever mesmo após a data limite.
             </p>
+          </div>
+          <div className="input-group" style={{ marginBottom: 0, marginTop: 14 }}>
+            <label className="input-label">Vídeo de chamada (link do YouTube, opcional)</label>
+            <input className="input-field" type="text" placeholder="https://youtube.com/watch?v=..." value={form.videoUrl} onChange={set('videoUrl')} />
           </div>
         </div>
 

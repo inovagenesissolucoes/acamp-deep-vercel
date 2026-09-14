@@ -328,12 +328,12 @@ function verificarLider(usuarioId) {
 
 function acaoCriarEvento(body, usuarioId) {
   if (!verificarLider(usuarioId)) return { ok: false, erro: 'Acesso negado.' };
-  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao, senhaExcecao, tipoChavePix } = body;
+  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao, senhaExcecao, tipoChavePix, videoUrl } = body;
   if (!nome || !dataInicio || !dataFim || !dataLimite || !valor) return { ok: false, erro: 'Dados incompletos.' };
 
   const id = gerarId();
   const agora = new Date().toISOString();
-  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora, senhaExcecao || '', tipoChavePix || '']);
+  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora, senhaExcecao || '', tipoChavePix || '', videoUrl || '']);
   return { ok: true, data: { id } };
 }
 
@@ -746,7 +746,7 @@ function setupPlanilha() {
   const abas = {
     'usuarios': ['id', 'nome', 'sobrenome', 'email', 'telefone', 'dataNascimento', 'membroDeep', 'membroIgreja', 'acesso', 'senha', 'createdAt'],
     'sessoes': ['token', 'usuarioId', 'createdAt', 'expiresAt'],
-    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt', 'senhaExcecao', 'tipoChavePix'],
+    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt', 'senhaExcecao', 'tipoChavePix', 'videoUrl'],
     'eventoAtivo': ['eventoId'],
     'inscricoes': ['id', 'eventoId', 'usuarioId', 'whatsappResponsavel', 'createdAt'],
     'parcelas': ['id', 'inscricaoId', 'numero', 'totalParcelas', 'valor', 'vencimento', 'status', 'comprovanteUrl', 'pagoEm'],

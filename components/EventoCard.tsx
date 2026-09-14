@@ -16,6 +16,7 @@ export interface Evento {
   chavePix?: string
   idadeAutorizacao?: number
   temExcecaoPrazo?: boolean
+  videoUrl?: string
 }
 
 function formatarData(iso: string) {

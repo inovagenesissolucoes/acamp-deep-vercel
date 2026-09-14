@@ -72,6 +72,7 @@ export default function EditarEventoPage() {
           {[
             { label: 'Chave PIX', campo: 'chavePix', type: 'text' },
             { label: 'Senha de Exceção (opcional)', campo: 'senhaExcecao', type: 'text', placeholder: 'Libera inscrição após o prazo' },
+            { label: 'Vídeo de Chamada (YouTube, opcional)', campo: 'videoUrl', type: 'text', placeholder: 'https://youtube.com/watch?v=...' },
           ].map(({ label, campo, type, placeholder }) => (
             <div key={campo} className="input-group">
               <label className="input-label">{label}</label>
