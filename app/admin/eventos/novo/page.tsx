@@ -26,13 +26,24 @@ function Campo({ label, value, onChange, type = 'text', placeholder = '', as = '
   )
 }
 
+function placeholderChave(tipo: string) {
+  switch (tipo) {
+    case 'cpf': return '000.000.000-00'
+    case 'cnpj': return '00.000.000/0000-00'
+    case 'telefone': return '(11) 98765-4321'
+    case 'email': return 'nome@exemplo.com'
+    case 'aleatoria': return 'Cole a chave aleatória (UUID)'
+    default: return ''
+  }
+}
+
 export default function NovoEventoPage() {
   const router = useRouter()
   const [form, setForm] = useState({
     nome: '', dataInicio: '', dataFim: '', horario: '',
     dataLimite: '', valor: '', status: 'aberto',
     recomendacoes: '', chavePix: '', idadeAutorizacao: '14',
-    senhaExcecao: '',
+    senhaExcecao: '', tipoChavePix: 'cpf' as 'cpf' | 'cnpj' | 'telefone' | 'email' | 'aleatoria',
   })
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState('')
@@ -67,6 +78,7 @@ export default function NovoEventoPage() {
       chavePix: form.chavePix.trim(),
       idadeAutorizacao: parseInt(form.idadeAutorizacao) || 14,
       senhaExcecao: form.senhaExcecao.trim(),
+      tipoChavePix: form.tipoChavePix,
     })
     setLoading(false)
 
@@ -120,9 +132,30 @@ export default function NovoEventoPage() {
           <p style={{ fontFamily: 'Poppins', fontWeight: 600, fontSize: 13, color: 'var(--primary)', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Financeiro</p>
           <Campo label="Valor de Investimento R$" value={form.valor} onChange={set('valor')} type="number" placeholder="Ex.: 200" />
           <Campo label="Data Limite para Pagamento" value={form.dataLimite} onChange={set('dataLimite')} type="date" />
+          <div className="input-group" style={{ marginBottom: 12 }}>
+            <label className="input-label">Tipo de Chave PIX *</label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {(['cpf', 'cnpj', 'telefone', 'email', 'aleatoria'] as const).map(tipo => (
+                <button
+                  key={tipo}
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, tipoChavePix: tipo }))}
+                  style={{
+                    padding: '7px 12px', borderRadius: 8,
+                    border: form.tipoChavePix === tipo ? '2px solid var(--primary)' : '1px solid #E5E7EB',
+                    background: form.tipoChavePix === tipo ? 'rgba(91,111,232,0.08)' : 'white',
+                    color: form.tipoChavePix === tipo ? 'var(--primary)' : 'var(--text-muted)',
+                    fontFamily: 'Poppins', fontWeight: 600, fontSize: 12.5, cursor: 'pointer', textTransform: 'capitalize',
+                  }}
+                >
+                  {tipo === 'cpf' ? 'CPF' : tipo === 'cnpj' ? 'CNPJ' : tipo === 'aleatoria' ? 'Aleatória' : tipo}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label className="input-label">Chave PIX do Evento *</label>
-            <input className="input-field" type="text" placeholder="CPF, CNPJ, telefone ou e-mail" value={form.chavePix} onChange={set('chavePix')} />
+            <input className="input-field" type="text" placeholder={placeholderChave(form.tipoChavePix)} value={form.chavePix} onChange={set('chavePix')} />
           </div>
         </div>
 

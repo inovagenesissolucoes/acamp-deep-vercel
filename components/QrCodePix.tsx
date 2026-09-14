@@ -5,23 +5,35 @@ import QRCode from 'qrcode'
 
 interface Props {
   chavePix: string
+  tipoChavePix?: string
   valor: number
   descricao?: string
 }
 
-export default function QrCodePix({ chavePix, valor, descricao }: Props) {
+export default function QrCodePix({ chavePix, tipoChavePix, valor, descricao }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [copiado, setCopiado] = useState(false)
   const [qrLoaded, setQrLoaded] = useState(false)
 
   useEffect(() => {
-    // Gera QR Code via API do canvas (qrcode lib via CDN dinâmico)
-    const pixCode = gerarCodigoPix(chavePix, valor, descricao)
+    const pixCode = gerarCodigoPix(chavePix, valor, tipoChavePix)
     gerarQR(pixCode)
-  }, [chavePix, valor, descricao])
+  }, [chavePix, valor, tipoChavePix])
 
-  function limparChavePix(chaveOriginal: string): string {
+  function limparChavePix(chaveOriginal: string, tipo?: string): string {
     const chave = chaveOriginal.trim()
+
+    // Se o tipo foi informado explicitamente (evento cadastrado após essa versão),
+    // aplica a regra certa sem precisar adivinhar.
+    if (tipo === 'email' || tipo === 'aleatoria') return chave
+    if (tipo === 'cpf' || tipo === 'cnpj') return chave.replace(/\D/g, '')
+    if (tipo === 'telefone') {
+      const numeros = chave.replace(/[^\d+]/g, '').replace(/^\+/, '')
+      const comDDI = numeros.startsWith('55') && numeros.length >= 12 ? numeros : '55' + numeros
+      return '+' + comDDI
+    }
+
+    // Fallback (eventos antigos sem tipo salvo): tenta adivinhar pelo formato.
     // E-mail: mantém como está
     if (chave.includes('@')) return chave
     // Chave aleatória (EVP): formato UUID com hífens — mantém como está
@@ -44,9 +56,9 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     return chave
   }
 
-  function gerarCodigoPix(chave: string, val: number, desc?: string): string {
+  function gerarCodigoPix(chave: string, val: number, tipo?: string): string {
     // Payload PIX simplificado (BR Code)
-    const chaveLimpa = limparChavePix(chave)
+    const chaveLimpa = limparChavePix(chave, tipo)
     const valorStr = val.toFixed(2)
     const merchantName = 'ACAMP DEEP'
     const merchantCity = 'SAO PAULO'
@@ -103,7 +115,7 @@ export default function QrCodePix({ chavePix, valor, descricao }: Props) {
     }
   }
 
-  const pixPayload = gerarCodigoPix(chavePix, valor, descricao)
+  const pixPayload = gerarCodigoPix(chavePix, valor, tipoChavePix)
 
   const copiar = async () => {
     try {

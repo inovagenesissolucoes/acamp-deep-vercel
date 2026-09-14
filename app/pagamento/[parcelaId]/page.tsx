@@ -14,6 +14,7 @@ interface ParcelaDetalhe {
   vencimento: string
   status: string
   chavePix?: string
+  tipoChavePix?: string
   eventoNome?: string
 }
 
@@ -150,6 +151,7 @@ export default function PagamentoPage() {
             </p>
             <QrCodePix
               chavePix={parcela?.chavePix || ''}
+              tipoChavePix={parcela?.tipoChavePix}
               valor={parcela?.valor || 0}
               descricao={`Parcela ${parcela?.numero || ''} - Acamp`}
             />

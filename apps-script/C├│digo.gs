@@ -305,12 +305,12 @@ function verificarLider(usuarioId) {
 
 function acaoCriarEvento(body, usuarioId) {
   if (!verificarLider(usuarioId)) return { ok: false, erro: 'Acesso negado.' };
-  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao, senhaExcecao } = body;
+  const { nome, dataInicio, dataFim, horario, dataLimite, valor, status, recomendacoes, chavePix, idadeAutorizacao, senhaExcecao, tipoChavePix } = body;
   if (!nome || !dataInicio || !dataFim || !dataLimite || !valor) return { ok: false, erro: 'Dados incompletos.' };
 
   const id = gerarId();
   const agora = new Date().toISOString();
-  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora, senhaExcecao || '']);
+  getSheet('eventos').appendRow([id, nome, dataInicio, dataFim, horario || '', dataLimite, valor, status || 'aberto', recomendacoes || '', chavePix || '', idadeAutorizacao || 14, agora, senhaExcecao || '', tipoChavePix || '']);
   return { ok: true, data: { id } };
 }
 
@@ -535,6 +535,7 @@ function acaoGetParcelasInscricao(body) {
       ...parcela,
       valor: parseFloat(parcela.valor) || 0,
       chavePix: evento.chavePix || '',
+      tipoChavePix: evento.tipoChavePix || '',
       eventoNome: evento.nome || '',
     }
   };
@@ -684,7 +685,7 @@ function setupPlanilha() {
   const abas = {
     'usuarios': ['id', 'nome', 'sobrenome', 'email', 'telefone', 'dataNascimento', 'membroDeep', 'membroIgreja', 'acesso', 'senha', 'createdAt'],
     'sessoes': ['token', 'usuarioId', 'createdAt', 'expiresAt'],
-    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt', 'senhaExcecao'],
+    'eventos': ['id', 'nome', 'dataInicio', 'dataFim', 'horario', 'dataLimite', 'valor', 'status', 'recomendacoes', 'chavePix', 'idadeAutorizacao', 'createdAt', 'senhaExcecao', 'tipoChavePix'],
     'eventoAtivo': ['eventoId'],
     'inscricoes': ['id', 'eventoId', 'usuarioId', 'whatsappResponsavel', 'createdAt'],
     'parcelas': ['id', 'inscricaoId', 'numero', 'totalParcelas', 'valor', 'vencimento', 'status', 'comprovanteUrl', 'pagoEm'],

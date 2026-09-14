@@ -43,7 +43,7 @@ export default function EditarEventoPage() {
 
   return (
     <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', background: '#F5F5F5' }}>
-      <HeaderInterno titulo="Editar Evento" voltarUrl={`/evento/${id}`} />
+      <HeaderInterno titulo="Editar Evento" />
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 20px', paddingBottom: 32 }}>
         <div className="card-solid" style={{ marginBottom: 14 }}>
           {[
@@ -53,6 +53,23 @@ export default function EditarEventoPage() {
             { label: 'Horário', campo: 'horario', type: 'text', placeholder: 'Ex.: 18 Hrs' },
             { label: 'Data Limite', campo: 'dataLimite', type: 'date' },
             { label: 'Valor (R$)', campo: 'valor', type: 'number' },
+          ].map(({ label, campo, type, placeholder }) => (
+            <div key={campo} className="input-group">
+              <label className="input-label">{label}</label>
+              <input className="input-field" type={type} placeholder={placeholder} value={form[campo] || ''} onChange={set(campo)} />
+            </div>
+          ))}
+          <div className="input-group">
+            <label className="input-label">Tipo de Chave PIX</label>
+            <select className="input-field" value={form.tipoChavePix || 'cpf'} onChange={set('tipoChavePix')}>
+              <option value="cpf">CPF</option>
+              <option value="cnpj">CNPJ</option>
+              <option value="telefone">Telefone</option>
+              <option value="email">E-mail</option>
+              <option value="aleatoria">Chave Aleatória</option>
+            </select>
+          </div>
+          {[
             { label: 'Chave PIX', campo: 'chavePix', type: 'text' },
             { label: 'Senha de Exceção (opcional)', campo: 'senhaExcecao', type: 'text', placeholder: 'Libera inscrição após o prazo' },
           ].map(({ label, campo, type, placeholder }) => (
